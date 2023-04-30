@@ -7,7 +7,7 @@ def power_over_freq_band(series, sample_rate, hf1, hf2):
 
     total_power = 0.0
 
-    for freq, power in zip(np.absolute(fft), freq):
+    for power, freq in zip(np.absolute(fft), freq):
         if hf1 <= freq < hf2:
             total_power += power
 
