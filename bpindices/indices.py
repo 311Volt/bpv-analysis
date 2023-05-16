@@ -26,7 +26,7 @@ def cycling_components_sum(series):
     amp_12 = 2 * f_abs[np.abs(freqs - 1 / 12).argmin()]
     phase_12 = np.angle(f[np.abs(freqs - 1 / 12).argmin()])
 
-    return amp_24 * np.cos(2 * np.pi * series / 24 + phase_24) + amp_12 * np.cos(2 * np.pi * series / 12 + phase_12)
+    return np.sum(amp_24 * np.cos(2 * np.pi * series / 24 + phase_24) + amp_12 * np.cos(2 * np.pi * series / 12 + phase_12))
 
 
 def idx_high_freq_power(bp_series, sample_rate):
@@ -56,7 +56,7 @@ def idx_self_similarity_scale_exponents(bp_series):
 def idx_entropy(bp_series, m, threshold):
     n = len(bp_series)
     count = np.sum(np.abs(np.diff(bp_series[:n - m + 1], n=m)) <= threshold)
-    return -math.log(count / (n - m))
+    return -math.log(np.max([10e-15, count]) / (n))
 
 
 def idx_standard_deviation(bp_series):
@@ -129,3 +129,17 @@ def idx_siesta_dipping(bp_series_day_w, bp_series_day_s):
 
 def idx_postprandial_fall(reading_before_lunch, reading_after_lunch):
     return reading_before_lunch - reading_after_lunch
+
+
+def all_indices(bp_series):
+    series_np = np.array(bp_series, dtype=np.float32)
+    return {
+        # "residual_variability": float(idx_residual_variability(series_np)),
+        "entropy": float(idx_entropy(series_np, 5, 12)),
+        "stddev": float(idx_standard_deviation(series_np)),
+        "coeff_of_variation": float(idx_coeff_of_variation(series_np)),
+        "arv": float(idx_arv(series_np)),
+        "range": float(idx_range(series_np)),
+        "peak": float(idx_peak(series_np)),
+        "through": float(idx_through(series_np))
+    }
