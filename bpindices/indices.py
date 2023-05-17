@@ -135,6 +135,7 @@ def all_indices(bp_series):
     series_np = np.array(bp_series, dtype=np.float32)
     return {
         # "residual_variability": float(idx_residual_variability(series_np)),
+        "mean": float(np.mean(series_np)),
         "entropy": float(idx_entropy(series_np, 5, 12)),
         "stddev": float(idx_standard_deviation(series_np)),
         "coeff_of_variation": float(idx_coeff_of_variation(series_np)),
