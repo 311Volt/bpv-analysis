@@ -98,4 +98,4 @@ def writeMarkdownForMetricToFile(data_frame, metric, filename):
 
 
 
-writeMarkdownForMetricToFile(parseTableToDataFrame("params.json"), "entropy", "entropy.md")
+writeMarkdownForMetricToFile(parseTableToDataFrame("../params.json"), "entropy", "entropy.md")

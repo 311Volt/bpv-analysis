@@ -10,7 +10,7 @@ def power_over_freq_band(series, sample_rate, hf1, hf2):
     total_power = 0.0
 
     for power, freq in zip(np.absolute(fft), freq):
-        if hf1 <= freq < hf2:
+        if hf1 <= freq <= hf2:
             total_power += power
 
     return total_power
@@ -134,7 +134,7 @@ def idx_postprandial_fall(reading_before_lunch, reading_after_lunch):
 def all_indices(bp_series):
     series_np = np.array(bp_series, dtype=np.float32)
     return {
-        # "residual_variability": float(idx_residual_variability(series_np)),
+        "residual_variability": float(idx_residual_variability(series_np)),
         "mean": float(np.mean(series_np)),
         "entropy": float(idx_entropy(series_np, 5, 12)),
         "stddev": float(idx_standard_deviation(series_np)),
