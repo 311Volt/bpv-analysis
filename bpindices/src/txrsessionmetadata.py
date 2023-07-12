@@ -3,7 +3,7 @@ import datetime
 
 
 @dataclass
-class BPSeriesMetadata:
+class TxrSessionMetadata:
     id: str
     age: int
     gender: str

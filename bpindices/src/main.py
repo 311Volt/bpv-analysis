@@ -1,52 +1,20 @@
-import dataclasses
 
-import indices
 import datareader
-import json
-import scipy
-import scipy.stats
-import typing
-
-from BPSeries import BPSeries
-
-
-# def index_series_for_param(arrdata: typing.List[BPSeries], lparam: typing.Callable[[dict], float]):
-#     ret = []
-#     for row in arrdata:
-#         ret.append(lparam(row.in))
-#     return ret
-
-
-def normality_test(series):
-    return scipy.stats.shapiro(series).pvalue >= 0.05
-
-
-def data_where_gender(dat: typing.List[BPSeries], gender: str):
-    return [row for row in dat if row.meta.gender == gender]
-
-
-def data_where_age_valid(dat: typing.List[BPSeries]):
-    return [row for row in dat if row.meta.age < 100]
+import dataextractor
 
 
 def entry_point():
-    meta = datareader.read_bpv_metadata("../RESP_metadata.csv")
-    data: typing.List[BPSeries] = []
+    sessions = datareader.batch_import_txr_sessions("RESP_metadata.csv")
 
-    for entry in meta:
-        bpvdata = datareader.import_bpv_data(entry)
-        if len(bpvdata.series_systolic) == 0:
-            continue
-        bpvdata.indices_systolic = indices.all_indices(bpvdata.series_systolic)
-        bpvdata.indices_diastolic = indices.all_indices(bpvdata.series_diastolic)
-        bpvdata.indices_avg = indices.all_indices(bpvdata.series_avg)
-        data.append(bpvdata)
+    mtx = dataextractor.create_data_frame(
+        sessions=sessions, extractor_name="systolic",
+        filter_names=["age_valid"],
+        index_names=["stddev", "arv", "range"]
+    )
 
-    dataf = data_where_gender(data, "female")
-    datam = data_where_gender(data, "male")
-    dataa = data_where_age_valid(data)
+    print(mtx)
 
-    print(json.dumps([dataclasses.asdict(dat) for dat in data], indent=4))
+    # print(json.dumps([dataclasses.asdict(dat) for dat in sessions], indent=4))
 
     # keys = ["mean", "entropy", "stddev", "coeff_of_variation", "arv", "range", "peak", "through"]
     #

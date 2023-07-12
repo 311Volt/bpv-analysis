@@ -1,3 +1,5 @@
+import typing
+
 import numpy as np
 import scipy.stats
 import math
@@ -26,7 +28,8 @@ def cycling_components_sum(series):
     amp_12 = 2 * f_abs[np.abs(freqs - 1 / 12).argmin()]
     phase_12 = np.angle(f[np.abs(freqs - 1 / 12).argmin()])
 
-    return np.sum(amp_24 * np.cos(2 * np.pi * series / 24 + phase_24) + amp_12 * np.cos(2 * np.pi * series / 12 + phase_12))
+    return np.sum(
+        amp_24 * np.cos(2 * np.pi * series / 24 + phase_24) + amp_12 * np.cos(2 * np.pi * series / 12 + phase_12))
 
 
 def idx_high_freq_power(bp_series, sample_rate):
@@ -53,10 +56,14 @@ def idx_self_similarity_scale_exponents(bp_series):
     pass
 
 
-def idx_entropy(bp_series, m, threshold):
+def idx_mean(bp_series):
+    return np.mean(bp_series)
+
+
+def idx_entropy(bp_series, m=5, threshold=12):
     n = len(bp_series)
     count = np.sum(np.abs(np.diff(bp_series[:n - m + 1], n=m)) <= threshold)
-    return -math.log(np.max([10e-15, count]) / (n))
+    return -math.log(np.max([10e-15, count]) / n)
 
 
 def idx_standard_deviation(bp_series):
@@ -131,16 +138,25 @@ def idx_postprandial_fall(reading_before_lunch, reading_after_lunch):
     return reading_before_lunch - reading_after_lunch
 
 
-def all_indices(bp_series):
+bpv_index_functions = {
+    "residual_variability": idx_residual_variability,
+    "mean": idx_mean,
+    "entropy": idx_entropy,
+    "stddev": idx_standard_deviation,
+    "coeff_of_variation": idx_coeff_of_variation,
+    "arv": idx_arv,
+    "range": idx_range,
+    "peak": idx_peak,
+    "through": idx_through
+}
+
+bpv_all_indices: typing.List[str] = list(bpv_index_functions.keys())
+
+
+def calculate_index(bp_series: typing.List[float], idxname: str) -> float:
     series_np = np.array(bp_series, dtype=np.float32)
-    return {
-        "residual_variability": float(idx_residual_variability(series_np)),
-        "mean": float(np.mean(series_np)),
-        "entropy": float(idx_entropy(series_np, 5, 12)),
-        "stddev": float(idx_standard_deviation(series_np)),
-        "coeff_of_variation": float(idx_coeff_of_variation(series_np)),
-        "arv": float(idx_arv(series_np)),
-        "range": float(idx_range(series_np)),
-        "peak": float(idx_peak(series_np)),
-        "through": float(idx_through(series_np))
-    }
+    return float(bpv_index_functions[idxname](series_np))
+
+
+def all_indices(bp_series):
+    return {idx: calculate_index(bp_series, idx) for idx in bpv_index_functions}

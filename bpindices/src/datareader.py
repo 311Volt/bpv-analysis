@@ -1,11 +1,11 @@
 import csv
-from BPSeries import BPSeries
-from BPSeriesMetadata import BPSeriesMetadata
+from txrsession import TxrSession
+from txrsessionmetadata import TxrSessionMetadata
 import typing
 import dateutils
 
 
-def read_bpv_metadata(filename: str) -> typing.List[BPSeriesMetadata]:
+def read_txr_sessions_metadata(filename: str) -> typing.List[TxrSessionMetadata]:
     results = []
     with open(filename, "r") as infile:
         reader = csv.DictReader(infile)
@@ -15,7 +15,7 @@ def read_bpv_metadata(filename: str) -> typing.List[BPSeriesMetadata]:
             month = begin_date[3:5]
             year = begin_date[6:10]
             time = begin_date[10:15]
-            results.append(BPSeriesMetadata(
+            results.append(TxrSessionMetadata(
                 id=row["Identyfikator"],
                 age=int(row["Wiek"]),
                 gender="male" if row["Plec"][0] == 'M' else "female",
@@ -40,10 +40,9 @@ def minutes_between(t1: str, t2: str) -> int:
     return int(delta.total_seconds() / 60)
 
 
-def import_bpv_data(metadata: BPSeriesMetadata) -> BPSeries:
+def import_txr_session(metadata: TxrSessionMetadata) -> TxrSession:
     ts_systolic = []
     ts_diastolic = []
-    ts_avg = []
     mins_since_start = []
     timestamps = []
 
@@ -54,18 +53,17 @@ def import_bpv_data(metadata: BPSeriesMetadata) -> BPSeries:
             if "Skurczowe" in row and len(row["Skurczowe"].strip()) > 0:
                 ts_systolic.append(int(row["Skurczowe"]))
                 ts_diastolic.append(int(row["Rozkurczowe"]))
-                ts_avg.append(int(row["SCT"]))
                 mins_since_start.append(minutes_between(metadata.beginTime, date_string(row)))
                 timestamps.append(date_string(row))
 
-    return BPSeries(
+    return TxrSession(
         meta=metadata,
         series_systolic=ts_systolic,
         series_diastolic=ts_diastolic,
-        series_avg=ts_avg,
         mins_since_start=mins_since_start,
-        timestamps=timestamps,
-        indices_systolic={},
-        indices_diastolic={},
-        indices_avg={}
+        timestamps=timestamps
     )
+
+
+def batch_import_txr_sessions(metadata_filename: str) -> typing.List[TxrSession]:
+    return [import_txr_session(meta) for meta in read_txr_sessions_metadata(metadata_filename)]
