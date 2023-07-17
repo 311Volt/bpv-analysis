@@ -1,5 +1,6 @@
 import pandas as pd
 import json
+import matplotlib.pyplot as plt
 def parseTableToDataFrame(json_file):
     with open(json_file) as f:
         data = json.load(f)
@@ -10,6 +11,7 @@ def extractSingleMetricToDataFrame(metric, full_data_frame):
     selected_columns = ['id', 'age', 'gender', f"indices_systolic.{metric}",
                         f"indices_diastolic.{metric}", f"indices_avg.{metric}"]
     data_frame = full_data_frame[selected_columns].copy()
+    data_frame = data_frame[data_frame['age'] < 110]
     return data_frame
 
 
@@ -58,6 +60,41 @@ def createMdTableFromDataFrame(data_frame, metric):
     return new_markdown
 
 
+def createChartFromDataFrame(data_frame, metric):
+    df = extractSingleMetricToDataFrame(metric, data_frame)
+    df = df.sort_values(by='age')
+    df = optimiseDataFrame(df, metric)
+    X = df['age']
+    Y_s = df['indices_systolic.'+metric]
+    Y_d = df['indices_diastolic.'+metric]
+    Y_a = df['indices_avg.'+metric]
+    plt.scatter(X, Y_s, marker='o', label='Systolic')
+    plt.scatter(X, Y_d, marker='o', label='Diastolic')
+    plt.scatter(X, Y_a, marker='o', label='Average')
+    plt.title(metric + " in relation to age")
+    plt.ylabel(metric)
+    plt.xlabel("age")
+    plt.legend()
+
+    file_name = 'markdown/images/' + metric + '.png'
+    plt.savefig(file_name)
+
+    return file_name
+    # df.plot(x='age', y='indices_diastolic.'+metric, kind='scatter', color='red')
+    # df.plot(x='age', y='indices_systolic.'+metric, kind='scatter')
+    # plt.show()
+
+
+def optimiseDataFrame(df, metric):
+    # remove punkty oddalone - ręczna optymalizacja dla entropy
+    if metric == 'entropy':
+        cut_value = 34
+        df = df[df['indices_avg.' + metric] < cut_value]
+        df = df[df['indices_systolic.' + metric] < cut_value]
+        df = df[df['indices_diastolic.' + metric] < cut_value]
+    return df
+
+
 def createDescriptionForMetric(data_frame, metric):
     df = extractSingleMetricToDataFrame(metric, data_frame)
     max_values = df.max()
@@ -75,7 +112,6 @@ def createDescriptionForMetric(data_frame, metric):
                 value = float(split_row[i])
                 if max_values[i] == value:
                     ids[i - (len(split_row) - 3)] = (split_row[0], value)
-                    # split_row[i] = "**" + split_row[i].strip() + "**"
         title += 1
 
     return "After calculating " + metric + " for each patient's systolic, diastolic and average " \
@@ -88,8 +124,9 @@ def createDescriptionForMetric(data_frame, metric):
 def createMarkdownForMetric(data_frame, metric):
     markdown_text = createDescriptionForMetric(data_frame, metric)
     markdown_table = createMdTableFromDataFrame(data_frame, metric)
+    markdown_chart = createChartFromDataFrame(data_frame, metric)
 
-    return markdown_text + "\n\n\n" + markdown_table
+    return markdown_text + "\n\n\n" + markdown_table + "\n\n\n" + "![Plot](" + markdown_chart + ")"
 
 
 def writeMarkdownForMetricToFile(data_frame, metric, filename):
@@ -98,4 +135,4 @@ def writeMarkdownForMetricToFile(data_frame, metric, filename):
 
 
 
-writeMarkdownForMetricToFile(parseTableToDataFrame("params.json"), "entropy", "entropy.md")
+writeMarkdownForMetricToFile(parseTableToDataFrame("params.json"), "entropy", "markdown/entropy.md")
