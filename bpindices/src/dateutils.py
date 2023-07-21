@@ -7,3 +7,4 @@ def str_to_datetime(t: str):
 
 def datetime_to_str(t: datetime.datetime):
     return t.strftime("%Y-%m-%d %H:%M")
+

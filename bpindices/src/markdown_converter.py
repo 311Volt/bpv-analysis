@@ -1,19 +1,22 @@
 import pandas as pd
 import json
-def parseTableToDataFrame(json_file):
+
+
+def parse_table_to_data_frame(json_file):
     with open(json_file) as f:
         data = json.load(f)
         data_frame = pd.json_normalize(data)
         return data_frame
 
-def extractSingleMetricToDataFrame(metric, full_data_frame):
+
+def extract_single_metric_to_data_frame(metric, full_data_frame):
     selected_columns = ['id', 'age', 'gender', f"indices_systolic.{metric}",
                         f"indices_diastolic.{metric}", f"indices_avg.{metric}"]
     data_frame = full_data_frame[selected_columns].copy()
     return data_frame
 
 
-def dataFrameToMarkdown(df):
+def data_frame_to_markdown(df):
     markdown_rows = []
 
     markdown_row = "| " + " | ".join(str(value) for value in df.columns) + " |"
@@ -34,20 +37,21 @@ def dataFrameToMarkdown(df):
     markdown_table = "\n".join(markdown_rows)
     return markdown_table
 
-def createMdTableFromDataFrame(data_frame, metric):
-    df = extractSingleMetricToDataFrame(metric, data_frame)
+
+def create_md_table_from_data_frame(data_frame, metric):
+    df = extract_single_metric_to_data_frame(metric, data_frame)
     max_values = df.max()
-    markdown = dataFrameToMarkdown(df)
+    markdown = data_frame_to_markdown(df)
 
     markdown_rows = markdown.split('\n')
 
-    new_markdown=""
+    new_markdown = ""
     title = 0
     for row in markdown_rows:
         split_row = row.split('|')[1:-1]
         new_row = ""
         for i in range(0, len(split_row)):
-            if i >= len(split_row)-3 and title > 1:
+            if i >= len(split_row) - 3 and title > 1:
                 value = float(split_row[i])
                 if max_values[i] == value:
                     split_row[i] = "**" + split_row[i].strip() + "**"
@@ -58,11 +62,11 @@ def createMdTableFromDataFrame(data_frame, metric):
     return new_markdown
 
 
-def createDescriptionForMetric(data_frame, metric):
-    df = extractSingleMetricToDataFrame(metric, data_frame)
+def create_description_for_metric(data_frame, metric):
+    df = extract_single_metric_to_data_frame(metric, data_frame)
     max_values = df.max()
 
-    markdown = dataFrameToMarkdown(df)
+    markdown = data_frame_to_markdown(df)
     markdown_rows = markdown.split('\n')
 
     ids = ["", "", ""]
@@ -78,24 +82,26 @@ def createDescriptionForMetric(data_frame, metric):
                     # split_row[i] = "**" + split_row[i].strip() + "**"
         title += 1
 
-    return "After calculating " + metric + " for each patient's systolic, diastolic and average " \
-           "blood pressure we received following results (see table below). As we can see, highest " \
-           "systolic blood pressure was detected for patient " + str(ids[0][0]) + " and reached " + str(ids[0][1]) +\
-           ". Highest diastolic blood pressure was detected for patient " + str(ids[1][0]) + " and reached " + str(ids[1][1]) +\
-           ". Highest average blood pressure was detected for patient " + str(ids[2][0]) + " and reached " + str(ids[2][1]) + "."
+    return f"""
+        After calculating {metric} for each patient's systolic, diastolic and average
+        blood pressure we received following results (see table below).
+        As we can see, 
+        highest systolic blood pressure was detected for patient {ids[0][0]} and reached {ids[0][1]}.
+        Highest diastolic blood pressure was detected for patient {ids[1][0]} and reached {ids[1][1]}.
+        Highest average blood pressure was detected for patient {ids[2][0]} and reached {ids[2][1]}. 
+    """
 
 
-def createMarkdownForMetric(data_frame, metric):
-    markdown_text = createDescriptionForMetric(data_frame, metric)
-    markdown_table = createMdTableFromDataFrame(data_frame, metric)
+def create_markdown_for_metric(data_frame, metric):
+    markdown_text = create_description_for_metric(data_frame, metric)
+    markdown_table = create_md_table_from_data_frame(data_frame, metric)
 
     return markdown_text + "\n\n\n" + markdown_table
 
 
-def writeMarkdownForMetricToFile(data_frame, metric, filename):
+def write_markdown_for_metric_to_file(data_frame, metric, filename):
     with open(filename, "w") as file:
-        file.write(createMarkdownForMetric(data_frame, metric))
+        file.write(create_markdown_for_metric(data_frame, metric))
 
 
-
-writeMarkdownForMetricToFile(parseTableToDataFrame("../params.json"), "entropy", "entropy.md")
+write_markdown_for_metric_to_file(parse_table_to_data_frame("../params.json"), "entropy", "entropy.md")

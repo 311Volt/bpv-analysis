@@ -1,4 +1,5 @@
 import csv
+
 from txrsession import TxrSession
 from txrsessionmetadata import TxrSessionMetadata
 import typing
@@ -43,6 +44,7 @@ def minutes_between(t1: str, t2: str) -> int:
 def import_txr_session(metadata: TxrSessionMetadata) -> TxrSession:
     ts_systolic = []
     ts_diastolic = []
+    ts_bpm = []
     mins_since_start = []
     timestamps = []
 
@@ -53,13 +55,17 @@ def import_txr_session(metadata: TxrSessionMetadata) -> TxrSession:
             if "Skurczowe" in row and len(row["Skurczowe"].strip()) > 0:
                 ts_systolic.append(int(row["Skurczowe"]))
                 ts_diastolic.append(int(row["Rozkurczowe"]))
-                mins_since_start.append(minutes_between(metadata.beginTime, date_string(row)))
-                timestamps.append(date_string(row))
+                ts_bpm.append(int(row["Czestosc pracy serca"]))
+
+                datestr = date_string(row)
+                mins_since_start.append(minutes_between(metadata.beginTime, datestr))
+                timestamps.append(datestr)
 
     return TxrSession(
         meta=metadata,
         series_systolic=ts_systolic,
         series_diastolic=ts_diastolic,
+        series_bpm=ts_bpm,
         mins_since_start=mins_since_start,
         timestamps=timestamps
     )

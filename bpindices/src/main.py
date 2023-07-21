@@ -1,3 +1,4 @@
+import numpy as np
 
 import datareader
 import dataextractor
@@ -7,9 +8,10 @@ def entry_point():
     sessions = datareader.batch_import_txr_sessions("RESP_metadata.csv")
 
     mtx = dataextractor.create_data_frame(
-        sessions=sessions, extractor_name="systolic",
+        sessions=sessions,
+        extractor_name="systolic",
         filter_names=["age_valid"],
-        index_names=["stddev", "arv", "range"]
+        index_names=["mean", "stddev", "arv"]
     )
 
     print(mtx)
