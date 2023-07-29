@@ -1,7 +1,5 @@
-import numpy as np
-
 import datareader
-import dataextractor
+from src.dataflow import dataextractor
 
 
 def entry_point():
@@ -9,7 +7,7 @@ def entry_point():
 
     mtx = dataextractor.create_data_frame(
         sessions=sessions,
-        extractor_name="systolic",
+        extractor_name="bp_systolic",
         filter_names=["age_valid"],
         index_names=["mean", "stddev", "arv"]
     )

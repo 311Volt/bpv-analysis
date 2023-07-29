@@ -1,10 +1,9 @@
 import typing
 
-import indexfunctions as idxfn
+import src.indexfunctions as idxfn
 from dataclasses import dataclass
-from enum import Enum
 
-import registry
+import src.registry.basicregistry as registry
 
 
 @dataclass
@@ -15,7 +14,7 @@ class PatientIndex:
     calc_fn: typing.Callable
 
 
-patient_indices_registry = registry.create_registry([
+patient_indices_registry: typing.Dict[str, PatientIndex] = registry.create_registry([
     PatientIndex(
         name="residual_variability",
         display_name="Residual variability",
