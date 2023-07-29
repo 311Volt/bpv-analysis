@@ -1,5 +1,11 @@
+import tkinter
+
 import datareader
+import src.gui as gui
 from src.dataflow import dataextractor
+
+import wx
+import registry as reg
 
 
 def entry_point():
@@ -13,6 +19,27 @@ def entry_point():
     )
 
     print(mtx)
+
+    wxapp = wx.App()
+
+    win = gui.MainWindow(None, "BPV Analyzer")
+    win.Show(True)
+
+    wxapp.MainLoop()
+
+    # window = tk.Tk()
+    #
+    # choices = {idx.name: idx.display_name for idx in reg.patient_indices_registry.values()}
+    #
+    # index_choice = checklistbox.ChecklistBox(window, choices=choices, width=20, height=10)
+    # index_choice.config(state=tkinter.DISABLED)
+    # index_choice.pack()
+    #
+    # tk.mainloop()
+
+
+
+
 
     # print(json.dumps([dataclasses.asdict(dat) for dat in sessions], indent=4))
 
