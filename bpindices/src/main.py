@@ -13,9 +13,8 @@ def entry_point():
 
     mtx = dataextractor.create_data_frame(
         sessions=sessions,
-        extractor_name="bp_systolic",
         filter_names=["age_valid"],
-        index_names=["mean", "stddev", "arv"]
+        index_paths=["bp_systolic/mean", "bp_systolic/stddev", "bp_systolic/arv"]
     )
 
     print(mtx)

@@ -25,17 +25,21 @@ def extract_series(session: TxrSession, extractor_name: str):
 
 def create_data_frame(
         sessions: typing.List[TxrSession],
-        extractor_name: str,
         filter_names: typing.List[str],
-        index_names: typing.List[str]
+        index_paths: typing.List[str]
 ) -> pd.DataFrame:
     filtered_sessions = filter_sessions(sessions, filter_names)
 
-    matrix = np.zeros((len(filtered_sessions), len(index_names)), dtype=np.float32)
+    extractor_names = [s.split("/")[0] for s in index_paths]
+    extractor_names_set = set(extractor_names)
+    index_names = [s.split("/")[1] for s in index_paths]
+
+    matrix = np.zeros((len(filtered_sessions), len(index_paths)), dtype=np.float32)
 
     for sesidx, session in enumerate(filtered_sessions):
-        series = extract_series(session, extractor_name)
-        for idxidx, idxname in enumerate(index_names):
-            matrix[(sesidx, idxidx)] = reg.patient_indices_registry[idxname].calc_fn(*series)
+        all_series = {extractor_name: extract_series(session, extractor_name) for extractor_name in extractor_names_set}
+        for pathidx, pathname in enumerate(index_names):
+            series = all_series[extractor_names[pathidx]]
+            matrix[(sesidx, pathidx)] = reg.patient_indices_registry[index_names[pathidx]].calc_fn(*series)
 
-    return pd.DataFrame(matrix, columns=index_names, copy=True, dtype=np.float32)
+    return pd.DataFrame(matrix, columns=index_paths, copy=True, dtype=np.float32)

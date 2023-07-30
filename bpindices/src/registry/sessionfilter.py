@@ -12,7 +12,7 @@ class SessionFilter:
     predicate: typing.Callable[[TxrSession], bool]
 
 
-session_filter_registry: typing.Dict[str, SessionFilter] = registry.create_registry([
+arr_session_filter_registry = [
     SessionFilter(
         name="age_valid",
         display_name="Age Valid",
@@ -28,6 +28,6 @@ session_filter_registry: typing.Dict[str, SessionFilter] = registry.create_regis
         display_name="Gender Female",
         predicate=lambda ses: ses.meta.gender == "female"
     )
-])
+]
 
-arr_session_filter_registry = list(session_filter_registry.values())
+session_filter_registry: typing.Dict[str, SessionFilter] = registry.create_registry(arr_session_filter_registry)

@@ -14,7 +14,7 @@ class ExtractedDataType:
     datatype: typing.Type
 
 
-extracted_data_type_registry: typing.Dict[str, ExtractedDataType] = registry.create_registry([
+arr_extracted_data_type_registry = [
     ExtractedDataType(
         name="blood_pressure",
         tags={"num_series"},
@@ -30,6 +30,7 @@ extracted_data_type_registry: typing.Dict[str, ExtractedDataType] = registry.cre
         tags=set(),
         datatype=typing.Tuple[TxrSessionMetadata]
     )
-])
+]
 
-arr_extracted_data_type_registry = list(extracted_data_type_registry.values())
+extracted_data_type_registry: typing.Dict[str, ExtractedDataType] \
+    = registry.create_registry(arr_extracted_data_type_registry)

@@ -13,7 +13,7 @@ class SeriesExtractor:
     extractor: typing.Callable
 
 
-series_extractor_registry: typing.Dict[str, SeriesExtractor] = registry.create_registry([
+arr_series_extractor_registry = [
     SeriesExtractor(
         name="bp_systolic",
         display_name="Systolic blood pressure",
@@ -51,6 +51,6 @@ series_extractor_registry: typing.Dict[str, SeriesExtractor] = registry.create_r
         extractor=lambda ses: (ses.meta,)
     ),
 
-])
+]
 
-arr_series_extractor_registry = list(series_extractor_registry.values())
+series_extractor_registry: typing.Dict[str, SeriesExtractor] = registry.create_registry(arr_series_extractor_registry)

@@ -14,24 +14,12 @@ class PatientIndex:
     calc_fn: typing.Callable
 
 
-patient_indices_registry: typing.Dict[str, PatientIndex] = registry.create_registry([
-    PatientIndex(
-        name="residual_variability",
-        display_name="Residual variability",
-        applicable_to="tag:num_series",
-        calc_fn=idxfn.idx_residual_variability
-    ),
+arr_patient_indices_registry = [
     PatientIndex(
         name="mean",
         display_name="Mean value",
         applicable_to="tag:num_series",
         calc_fn=idxfn.idx_mean
-    ),
-    PatientIndex(
-        name="entropy",
-        display_name="Entropy (WIP)",
-        applicable_to="tag:num_series",
-        calc_fn=idxfn.idx_entropy
     ),
     PatientIndex(
         name="stddev",
@@ -40,16 +28,29 @@ patient_indices_registry: typing.Dict[str, PatientIndex] = registry.create_regis
         calc_fn=idxfn.idx_standard_deviation
     ),
     PatientIndex(
-        name="coeff_var",
-        display_name="Coefficient of variation",
-        applicable_to="tag:num_series",
-        calc_fn=idxfn.idx_coeff_of_variation
-    ),
-    PatientIndex(
         name="arv",
         display_name="Average real variability",
         applicable_to="tag:num_series",
         calc_fn=idxfn.idx_arv
+    ),
+    PatientIndex(
+        name="residual_variability",
+        display_name="Residual variability",
+        applicable_to="tag:num_series",
+        calc_fn=idxfn.idx_residual_variability
+    ),
+
+    PatientIndex(
+        name="entropy",
+        display_name="Entropy (WIP)",
+        applicable_to="tag:num_series",
+        calc_fn=idxfn.idx_entropy
+    ),
+    PatientIndex(
+        name="coeff_var",
+        display_name="Coefficient of variation",
+        applicable_to="tag:num_series",
+        calc_fn=idxfn.idx_coeff_of_variation
     ),
     PatientIndex(
         name="range",
@@ -87,6 +88,7 @@ patient_indices_registry: typing.Dict[str, PatientIndex] = registry.create_regis
         applicable_to="session_data",
         calc_fn=lambda meta: meta.age
     )
-])
+]
 
-arr_patient_indices_registry = list(patient_indices_registry.values())
+
+patient_indices_registry: typing.Dict[str, PatientIndex] = registry.create_registry(arr_patient_indices_registry)
