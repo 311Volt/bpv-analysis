@@ -1,7 +1,28 @@
+import typing
+from dataclasses import dataclass
+
 import wx
 
 
+@dataclass
+class CheckListEntry:
+    name: str
+    display_name: str
+
+
 class RegCheckListBox(wx.CheckListBox):
-    def __init__(self, parent, **kwargs):
-        wx.CheckListBox.__init__(self, parent, *kwargs)
+    def __init__(self, parent: wx.Window, entries: typing.List[CheckListEntry], **kwargs):
+        self.entries = entries
+
+        self.ctrl_choices = [entry.display_name for entry in entries]
+        self.entry_to_index = {entry.name: idx for idx, entry in enumerate(entries)}
+        self.index_to_entry = [entry.name for entry in entries]
+
+        super().__init__(parent=parent, choices=self.ctrl_choices, **kwargs)
+
+    def get_selections(self):
+        return [self.index_to_entry[idx] for idx in self.GetCheckedItems()]
+
+    def set_selections(self, entry_names: typing.List[str]):
+        self.SetCheckedItems([self.entry_to_index[name] for name in entry_names])
 

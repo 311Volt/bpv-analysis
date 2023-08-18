@@ -11,14 +11,6 @@ import registry as reg
 def entry_point():
     sessions = datareader.batch_import_txr_sessions("RESP_metadata.csv")
 
-    mtx = dataextractor.create_data_frame(
-        sessions=sessions,
-        filter_names=["age_valid"],
-        index_paths=["bp_systolic/mean", "bp_systolic/stddev", "bp_systolic/arv"]
-    )
-
-    print(mtx)
-
     wxapp = wx.App()
 
     win = gui.MainWindow(None, "BPV Analyzer")

@@ -20,7 +20,7 @@ def filter_sessions(
 
 def extract_series(session: TxrSession, extractor_name: str):
     extractor = reg.series_extractor_registry[extractor_name]
-    return np.array(extractor.extractor(session), dtype=np.float32)
+    return extractor.extractor(session)
 
 
 def create_data_frame(

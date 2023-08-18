@@ -1,11 +1,14 @@
 import pandas as pd
 import json
 import matplotlib.pyplot as plt
+
+
 def parseTableToDataFrame(json_file):
     with open(json_file) as f:
         data = json.load(f)
         data_frame = pd.json_normalize(data)
         return data_frame
+
 
 def extractSingleMetricToDataFrame(metric, full_data_frame):
     selected_columns = ['id', 'age', 'gender', f"indices_systolic.{metric}",
@@ -36,6 +39,7 @@ def dataFrameToMarkdown(df):
     markdown_table = "\n".join(markdown_rows)
     return markdown_table
 
+
 def createMdTableFromDataFrame(data_frame, metric):
     df = extractSingleMetricToDataFrame(metric, data_frame)
     max_values = df.max()
@@ -43,13 +47,13 @@ def createMdTableFromDataFrame(data_frame, metric):
 
     markdown_rows = markdown.split('\n')
 
-    new_markdown=""
+    new_markdown = ""
     title = 0
     for row in markdown_rows:
         split_row = row.split('|')[1:-1]
         new_row = ""
         for i in range(0, len(split_row)):
-            if i >= len(split_row)-3 and title > 1:
+            if i >= len(split_row) - 3 and title > 1:
                 value = float(split_row[i])
                 if max_values[i] == value:
                     split_row[i] = "**" + split_row[i].strip() + "**"
@@ -65,9 +69,9 @@ def createChartFromDataFrame(data_frame, metric):
     df = df.sort_values(by='age')
     df = optimiseDataFrame(df, metric)
     X = df['age']
-    Y_s = df['indices_systolic.'+metric]
-    Y_d = df['indices_diastolic.'+metric]
-    Y_a = df['indices_avg.'+metric]
+    Y_s = df['indices_systolic.' + metric]
+    Y_d = df['indices_diastolic.' + metric]
+    Y_a = df['indices_avg.' + metric]
     plt.scatter(X, Y_s, marker='o', label='Systolic')
     plt.scatter(X, Y_d, marker='o', label='Diastolic')
     plt.scatter(X, Y_a, marker='o', label='Average')
@@ -115,10 +119,13 @@ def createDescriptionForMetric(data_frame, metric):
         title += 1
 
     return "After calculating " + metric + " for each patient's systolic, diastolic and average " \
-           "blood pressure we received following results (see table below). As we can see, highest " \
-           "systolic blood pressure was detected for patient " + str(ids[0][0]) + " and reached " + str(ids[0][1]) +\
-           ". Highest diastolic blood pressure was detected for patient " + str(ids[1][0]) + " and reached " + str(ids[1][1]) +\
-           ". Highest average blood pressure was detected for patient " + str(ids[2][0]) + " and reached " + str(ids[2][1]) + "."
+                                           "blood pressure we received following results (see table below). As we can see, highest " \
+                                           "systolic blood pressure was detected for patient " + str(
+        ids[0][0]) + " and reached " + str(ids[0][1]) + \
+        ". Highest diastolic blood pressure was detected for patient " + str(ids[1][0]) + " and reached " + str(
+            ids[1][1]) + \
+        ". Highest average blood pressure was detected for patient " + str(ids[2][0]) + " and reached " + str(
+            ids[2][1]) + "."
 
 
 def createMarkdownForMetric(data_frame, metric):
@@ -132,7 +139,6 @@ def createMarkdownForMetric(data_frame, metric):
 def writeMarkdownForMetricToFile(data_frame, metric, filename):
     with open(filename, "w") as file:
         file.write(createMarkdownForMetric(data_frame, metric))
-
 
 
 writeMarkdownForMetricToFile(parseTableToDataFrame("params.json"), "entropy", "markdown/entropy.md")
