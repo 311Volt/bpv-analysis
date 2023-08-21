@@ -1,5 +1,6 @@
 import typing
 from dataclasses import dataclass
+import numpy as np
 
 import src.registry.basicregistry as registry
 from src.registry.extracteddatatype import ExtractedDataType, extracted_data_type_registry
@@ -30,13 +31,13 @@ arr_series_extractor_registry = [
         name="bp_avg",
         display_name="Average blood pressure",
         type=extracted_data_type_registry["blood_pressure"],
-        extractor=lambda ses: (((2 / 3) * ses.series_diastolic + (1 / 3) * ses.series_systolic),)
+        extractor=lambda ses: (((2 / 3) * np.array(ses.series_diastolic) + (1 / 3) * np.array(ses.series_systolic)),)
     ),
     SeriesExtractor(
         name="bp_diff",
         display_name="Systolic minus diastolic",
         type=extracted_data_type_registry["blood_pressure"],
-        extractor=lambda ses: ((ses.series_systolic - ses.series_diastolic),)
+        extractor=lambda ses: ((np.array(ses.series_systolic) - np.array(ses.series_diastolic)),)
     ),
     SeriesExtractor(
         name="bpm",
