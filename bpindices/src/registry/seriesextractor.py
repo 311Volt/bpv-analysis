@@ -16,13 +16,13 @@ class SeriesExtractor:
 
 arr_series_extractor_registry = [
     SeriesExtractor(
-        name="bp_systolic",
+        name="bp_sys",
         display_name="Systolic blood pressure",
         type=extracted_data_type_registry["blood_pressure"],
         extractor=lambda ses: (ses.series_systolic,)
     ),
     SeriesExtractor(
-        name="bp_diastolic",
+        name="bp_dia",
         display_name="Diastolic blood pressure",
         type=extracted_data_type_registry["blood_pressure"],
         extractor=lambda ses: (ses.series_diastolic,)

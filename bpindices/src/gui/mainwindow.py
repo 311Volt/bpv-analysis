@@ -40,7 +40,7 @@ class MainWindow(wx.Frame):
 
         self.filter_checkboxes.set_selections(["age_valid"])
         self.index_checkboxes.set_selections(["age", "mean", "stddev", "arv"])
-        self.extractor_checkboxes.set_selections(["bp_systolic", "metadata"])
+        self.extractor_checkboxes.set_selections(["bp_sys", "metadata"])
 
         self.open_preview_btn = wx.Button(self, -1, "Open Preview", pos=(30, 265), size=(160, 24))
         self.gen_markdown_btn = wx.Button(self, -1, "Generate Markdown", pos=(30, 295), size=(160, 24))
