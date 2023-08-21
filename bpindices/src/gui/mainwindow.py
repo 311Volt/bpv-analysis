@@ -51,6 +51,7 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.show_preview, self.open_preview_btn)
         self.Bind(wx.EVT_BUTTON, self.generate_markdown, self.gen_markdown_btn)
         self.Bind(wx.EVT_CHECKLISTBOX, self.update_preview)
+        self.Bind(wx.EVT_CLOSE, self.on_close)
 
         self.txr_sessions = datareader.batch_import_txr_sessions("RESP_metadata.csv")
 
@@ -90,3 +91,8 @@ class MainWindow(wx.Frame):
 
     def generate_markdown(self, event):
         pass
+
+    def on_close(self, event):
+        if self.preview_window is not None:
+            self.preview_window.Close()
+        self.Destroy()
