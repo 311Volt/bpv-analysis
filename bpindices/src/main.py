@@ -18,19 +18,6 @@ def entry_point():
 
     wxapp.MainLoop()
 
-    # window = tk.Tk()
-    #
-    # choices = {idx.name: idx.display_name for idx in reg.patient_indices_registry.values()}
-    #
-    # index_choice = checklistbox.ChecklistBox(window, choices=choices, width=20, height=10)
-    # index_choice.config(state=tkinter.DISABLED)
-    # index_choice.pack()
-    #
-    # tk.mainloop()
-
-
-
-
 
     # print(json.dumps([dataclasses.asdict(dat) for dat in sessions], indent=4))
 

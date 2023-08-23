@@ -21,14 +21,15 @@ def power_over_freq_band(series: BPSeriesArray, sample_rate: float, hf1: float, 
 
 
 def cycling_components_sum(series: BPSeriesArray) -> float:
+    series = np.array(series, np.float32)
     f = np.fft.fft(series)
     f_abs = np.abs(f)
     freqs = np.fft.fftfreq(len(series))
 
-    amp_24 = 2 * f_abs[np.abs(freqs - 1 / 24).argmin()]
-    phase_24 = np.angle(f[np.abs(freqs - 1 / 24).argmin()])
-    amp_12 = 2 * f_abs[np.abs(freqs - 1 / 12).argmin()]
-    phase_12 = np.angle(f[np.abs(freqs - 1 / 12).argmin()])
+    amp_24 = 2.0 * f_abs[np.abs(freqs - 1 / 24).argmin()]
+    phase_24 = 1.0 * np.angle(f[np.abs(freqs - 1 / 24).argmin()])
+    amp_12 = 2.0 * f_abs[np.abs(freqs - 1 / 12).argmin()]
+    phase_12 = 1.0 * np.angle(f[np.abs(freqs - 1 / 12).argmin()])
 
     return float(np.sum(
         amp_24 * np.cos(2 * np.pi * series / 24 + phase_24) +

@@ -3,21 +3,21 @@ import typing
 import pandas
 import wx
 from src.gui.dataframe import DataFrameControl
+from src.gui.subwindow import SubWindow
 
 
-class PreviewWindow(wx.Frame):
+class PreviewWindow(SubWindow):
     def __init__(self, parent, df: pandas.DataFrame, **kwargs):
         super().__init__(parent, **kwargs)
         self.data_frame_list = DataFrameControl(self, df)
-        self.on_close_callback = None
         self.vbox = wx.BoxSizer(wx.HORIZONTAL)
-        self.vbox.Add(self.data_frame_list, border=15)
+        self.vbox.Add(self.data_frame_list)
 
-        self.Bind(wx.EVT_CLOSE, self.on_close)
+        self.SetTitle("Extracted Data Live Preview")
+        self.Show(True)
 
     def set_dataframe(self, df: pandas.DataFrame):
         self.data_frame_list.set_data_frame(df)
 
-    def on_close(self, event):
-        self.on_close_callback()
-        self.Destroy()
+    def export_to_csv(self, event):
+        pass

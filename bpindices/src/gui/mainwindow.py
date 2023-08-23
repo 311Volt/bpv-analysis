@@ -1,3 +1,4 @@
+import seaborn
 import wx
 
 import src.registry as reg
@@ -6,6 +7,8 @@ import src.datareader as datareader
 import src.dataflow.dataextractor as extractor
 import src.gui.regchecklistbox as regchk
 from src.gui.previewwindow import PreviewWindow
+
+import matplotlib.pyplot as plt
 
 import webbrowser
 
@@ -44,12 +47,15 @@ class MainWindow(wx.Frame):
 
         self.open_preview_btn = wx.Button(self, -1, "Open Preview", pos=(30, 265), size=(160, 24))
         self.gen_markdown_btn = wx.Button(self, -1, "Generate Markdown", pos=(30, 295), size=(160, 24))
+        self.corr_mtx_btn = wx.Button(self, -1, "Show Correlation Matrix", pos=(200, 265), size=(160, 24))
         self.gen_markdown_btn.Disable()
 
         self.preview_window = None
 
         self.Bind(wx.EVT_BUTTON, self.show_preview, self.open_preview_btn)
         self.Bind(wx.EVT_BUTTON, self.generate_markdown, self.gen_markdown_btn)
+        self.Bind(wx.EVT_BUTTON, self.show_corr_matrix, self.corr_mtx_btn)
+
         self.Bind(wx.EVT_CHECKLISTBOX, self.update_preview)
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
@@ -81,13 +87,20 @@ class MainWindow(wx.Frame):
 
     def show_preview(self, event):
         df = self.create_data_frame()
-        self.preview_window = PreviewWindow(None, df)
-        self.preview_window.Show(True)
-        self.preview_window.SetTitle("Extracted Data Live Preview")
-        self.preview_window.on_close_callback = self.acknowledge_window_close
+        self.preview_window = PreviewWindow(None, df, on_close_callback=self.acknowledge_preview_close)
 
-    def acknowledge_window_close(self):
+    def acknowledge_preview_close(self):
         self.preview_window = None
+
+    def show_corr_matrix(self, event):
+        corr_mtx = self.create_data_frame().corr()
+        fig = plt.figure(1)
+        plt.clf()
+        ax = seaborn.heatmap(corr_mtx, annot=True, cmap='coolwarm', center=0, fmt=".2f", linewidths=0.5)
+        ax.figure.tight_layout()
+        ax.figure.subplots_adjust(left=0.2, bottom=0.2)
+        plt.title("Correlation Matrix of selected parameters")
+        plt.show()
 
     def generate_markdown(self, event):
         pass

@@ -12,7 +12,6 @@ def dfc_format_sequence(seq):
     return output
 
 
-
 class DataFrameControl(wx.ListCtrl):
 
     def __init__(self, parent, dataframe: pd.DataFrame, **kwargs):
