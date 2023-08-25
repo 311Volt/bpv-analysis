@@ -12,6 +12,7 @@ import matplotlib.pyplot as plt
 
 import webbrowser
 
+FIGNUM_CORRELATION = 1
 
 class MainWindow(wx.Frame):
 
@@ -64,6 +65,8 @@ class MainWindow(wx.Frame):
     def update_preview(self, event):
         if self.preview_window is not None:
             self.preview_window.set_dataframe(self.create_data_frame())
+        if plt.fignum_exists(FIGNUM_CORRELATION):
+            self.show_corr_matrix(None)
 
     def list_selected_index_paths(self):
         return idxpath.create_combination_paths(
@@ -94,7 +97,7 @@ class MainWindow(wx.Frame):
 
     def show_corr_matrix(self, event):
         corr_mtx = self.create_data_frame().corr()
-        fig = plt.figure(1)
+        fig = plt.figure(FIGNUM_CORRELATION)
         plt.clf()
         ax = seaborn.heatmap(corr_mtx, annot=True, cmap='coolwarm', center=0, fmt=".2f", linewidths=0.5)
         ax.figure.tight_layout()
