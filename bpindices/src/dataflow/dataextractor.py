@@ -14,7 +14,7 @@ def filter_sessions(
     ret = sessions
     active_filters = [reg.session_filter_registry[name] for name in active_filter_names]
     for flt in active_filters:
-        ret = [session for session in sessions if flt.predicate(session)]
+        ret = [session for session in ret if flt.predicate(session)]
     return ret
 
 

@@ -47,18 +47,19 @@ class MainWindow(wx.Frame):
         self.index_checkboxes.set_selections(["age", "mean", "stddev", "arv"])
         self.extractor_checkboxes.set_selections(["bp_sys", "metadata"])
 
-        self.open_preview_btn = wx.Button(self, -1, "Open Preview", pos=(30, 265), size=(160, 24))
-        self.gen_markdown_btn = wx.Button(self, -1, "Generate Markdown", pos=(30, 295), size=(160, 24))
-        self.corr_mtx_btn = wx.Button(self, -1, "Show Correlation Matrix", pos=(200, 265), size=(160, 24))
+        self.open_preview_btn = wx.Button(self, -1, "Data View...", pos=(30, 265), size=(160, 24))
+        self.gen_markdown_btn = wx.Button(self, -1, "MD Report Generator...", pos=(30, 295), size=(160, 24))
+        self.corr_mtx_btn = wx.Button(self, -1, "Correlation Matrix View...", pos=(205, 265), size=(160, 24))
+        self.stat_view_btn = wx.Button(self, -1, "Statistics View...", pos=(385, 265), size=(160, 24))
 
-        self.corr_mode_sel_label = wx.StaticText(self, pos=(200, 300), size=(50, 24), style=wx.ALIGN_RIGHT)
+        self.corr_mode_sel_label = wx.StaticText(self, pos=(205, 300), size=(50, 24), style=wx.ALIGN_RIGHT)
         self.corr_mode_sel_label.SetLabel("Mode: ")
         self.corr_mode_sel = wx.ComboBox(
             self,
             name="Correlation Mode",
             choices=["Pearson", "Spearman"], value="Pearson",
             style=wx.CB_DROPDOWN | wx.CB_READONLY,
-            pos=(250, 295), size=(110, 24)
+            pos=(255, 295), size=(110, 24)
         )
         self.gen_markdown_btn.Disable()
 

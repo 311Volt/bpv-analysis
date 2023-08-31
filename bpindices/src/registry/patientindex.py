@@ -1,4 +1,5 @@
 import typing
+import re
 
 import src.indexfunctions as idxfn
 from dataclasses import dataclass
@@ -87,6 +88,12 @@ arr_patient_indices_registry = [
         display_name="Age",
         applicable_to="session_data",
         calc_fn=lambda meta: meta.age
+    ),
+    PatientIndex(
+        name="patient_id",
+        display_name="Patient ID",
+        applicable_to="session_data",
+        calc_fn=lambda meta: re.search('[0-9]+', meta.id).group()
     )
 ]
 
