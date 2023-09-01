@@ -1,9 +1,8 @@
-import itertools
+import typing
 
 import wx
-import typing
 import wx.lib.agw.customtreectrl as wxtree
-import src.dataflow.indexpath as idxpath
+
 from src.gui.checklistentry import CheckListEntry
 
 

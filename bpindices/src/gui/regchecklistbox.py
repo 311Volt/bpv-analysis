@@ -1,8 +1,8 @@
 import typing
-from dataclasses import dataclass
-from src.gui.checklistentry import CheckListEntry
 
 import wx
+
+from src.gui.checklistentry import CheckListEntry
 
 
 class RegCheckListBox(wx.CheckListBox):

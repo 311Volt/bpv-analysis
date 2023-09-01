@@ -1,18 +1,17 @@
-import seaborn
-import wx
-
-import src.registry as reg
-import src.dataflow.indexpath as idxpath
-import src.datareader as datareader
-import src.dataflow.dataextractor as extractor
-import src.gui.regchecklistbox as regchk
-import src.gui.treechecklistbox as treechk
-import wx.lib.agw.customtreectrl as wxtree
-from src.gui.previewwindow import PreviewWindow
+import webbrowser
 
 import matplotlib.pyplot as plt
+import seaborn
+import wx
+import wx.lib.agw.customtreectrl as wxtree
 
-import webbrowser
+import src.dataflow.dataextractor as extractor
+import src.dataflow.indexpath as idxpath
+import src.datareader as datareader
+import src.gui.regchecklistbox as regchk
+import src.gui.treechecklistbox as treechk
+import src.registry as reg
+from src.gui.previewwindow import PreviewWindow
 
 FIGNUM_CORRELATION = 1
 
@@ -52,7 +51,7 @@ class MainWindow(wx.Frame):
         self.open_preview_btn = wx.Button(self, -1, "Data View...", pos=(30, 265), size=(160, 24))
         self.gen_markdown_btn = wx.Button(self, -1, "MD Report Generator...", pos=(30, 295), size=(160, 24))
         self.corr_mtx_btn = wx.Button(self, -1, "Correlation Matrix View...", pos=(205, 265), size=(160, 24))
-        self.stat_view_btn = wx.Button(self, -1, "Statistics View...", pos=(385, 265), size=(160, 24))
+        self.stat_view_btn = wx.Button(self, -1, "Run Analyzer...", pos=(385, 265), size=(160, 24))
 
         self.corr_mode_sel_label = wx.StaticText(self, pos=(205, 300), size=(50, 24), style=wx.ALIGN_RIGHT)
         self.corr_mode_sel_label.SetLabel("Mode: ")

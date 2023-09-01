@@ -1,15 +1,9 @@
-import tkinter
-
-import datareader
-import src.gui as gui
-from src.dataflow import dataextractor
-
 import wx
-import registry as reg
+
+import src.gui as gui
 
 
 def entry_point():
-    sessions = datareader.batch_import_txr_sessions("RESP_metadata.csv")
 
     wxapp = wx.App()
 

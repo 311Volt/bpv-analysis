@@ -1,9 +1,8 @@
-import typing
 import re
-
-import src.indexfunctions as idxfn
+import typing
 from dataclasses import dataclass
 
+import src.indexfunctions as idxfn
 import src.registry.basicregistry as registry
 
 

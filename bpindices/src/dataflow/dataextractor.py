@@ -1,10 +1,10 @@
-import numpy as np
-
-from src.txrsession import TxrSession
-
 import typing
+
+import numpy as np
 import pandas as pd
+
 import src.registry as reg
+from src.txrsession import TxrSession
 
 
 def filter_sessions(

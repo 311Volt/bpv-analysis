@@ -1,7 +1,6 @@
-import typing
-
 import pandas
 import wx
+
 from src.gui.dataframe import DataFrameControl
 from src.gui.subwindow import SubWindow
 

@@ -1,8 +1,8 @@
+import math
+
 import numpy as np
 import numpy.typing as npt
 import scipy.stats
-import math
-
 
 BPSeriesArray = npt.NDArray[np.float32]
 

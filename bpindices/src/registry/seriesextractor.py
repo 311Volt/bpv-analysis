@@ -1,5 +1,6 @@
 import typing
 from dataclasses import dataclass
+
 import numpy as np
 
 import src.registry.basicregistry as registry

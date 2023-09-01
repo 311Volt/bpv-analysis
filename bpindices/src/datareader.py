@@ -1,9 +1,9 @@
 import csv
+import typing
 
+import dateutils
 from txrsession import TxrSession
 from txrsessionmetadata import TxrSessionMetadata
-import typing
-import dateutils
 
 
 def read_txr_sessions_metadata(filename: str) -> typing.List[TxrSessionMetadata]:

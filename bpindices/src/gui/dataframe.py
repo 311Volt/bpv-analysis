@@ -1,5 +1,5 @@
-import wx
 import pandas as pd
+import wx
 
 
 def dfc_format_sequence(seq):
