@@ -34,9 +34,13 @@ def index_applies_to_extractor(index_name: str, extractor_name: str) -> bool:
     return any(type_satisfies_rule(data_type, rule) for rule in rules)
 
 
+def create_combination_path(extractor_name: str, index_name: str):
+    return "{}/{}".format(extractor_name, index_name)
+
+
 def create_combination_paths(extractors: typing.List[str], indices: typing.List[str]):
     result = []
     for extractor, index in itertools.product(extractors, indices):
         if index_applies_to_extractor(index, extractor):
-            result.append("{}/{}".format(extractor, index))
+            result.append(create_combination_path(extractor, index))
     return result

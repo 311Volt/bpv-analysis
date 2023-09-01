@@ -6,6 +6,8 @@ import src.dataflow.indexpath as idxpath
 import src.datareader as datareader
 import src.dataflow.dataextractor as extractor
 import src.gui.regchecklistbox as regchk
+import src.gui.treechecklistbox as treechk
+import wx.lib.agw.customtreectrl as wxtree
 from src.gui.previewwindow import PreviewWindow
 
 import matplotlib.pyplot as plt
@@ -22,30 +24,30 @@ class MainWindow(wx.Frame):
         self.SetBackgroundColour(wx.NullColour)
         self.SetMinSize(self.GetSize())
 
-        index_choices = [
+        self.index_choices = [
             regchk.CheckListEntry(name=idx.name, display_name=idx.display_name)
             for idx in reg.arr_patient_indices_registry
         ]
-        filter_choices = [
+        self.filter_choices = [
             regchk.CheckListEntry(name=idx.name, display_name=idx.display_name)
             for idx in reg.arr_session_filter_registry
         ]
-        extractor_choices = [
+        self.extractor_choices = [
             regchk.CheckListEntry(name=idx.name, display_name=idx.display_name)
             for idx in reg.arr_series_extractor_registry
         ]
 
-        self.group_box_1 = wx.StaticBox(self, label="Indices", pos=(25, 15), size=(170, 220))
-        self.group_box_2 = wx.StaticBox(self, label="Filters", pos=(205, 15), size=(170, 220))
-        self.group_box_3 = wx.StaticBox(self, label="Extractors", pos=(385, 15), size=(170, 220))
+        self.group_box_1 = wx.StaticBox(self, label="Columns", pos=(25, 15), size=(330, 220))
+        self.group_box_2 = wx.StaticBox(self, label="Filters", pos=(385, 15), size=(170, 220))
 
-        self.index_checkboxes = regchk.RegCheckListBox(self, index_choices, pos=(30, 30), size=(160, 200))
-        self.filter_checkboxes = regchk.RegCheckListBox(self, filter_choices, pos=(210, 30), size=(160, 200))
-        self.extractor_checkboxes = regchk.RegCheckListBox(self, extractor_choices, pos=(390, 30), size=(160, 200))
+        self.filter_checkboxes = regchk.RegCheckListBox(self, self.filter_choices, pos=(390, 30), size=(160, 200))
+
+        self.path_checkboxes = treechk.TreeCheckListBox(self, pos=(30, 30), size=(320, 200))
+        for extractorentry in self.extractor_choices:
+            self.path_checkboxes.add_item_group(extractorentry, self.create_path_checkbox_items(extractorentry))
 
         self.filter_checkboxes.set_selections(["age_valid"])
-        self.index_checkboxes.set_selections(["age", "mean", "stddev", "arv"])
-        self.extractor_checkboxes.set_selections(["bp_sys", "metadata"])
+        self.path_checkboxes.set_selections(["bp_sys/mean", "bp_sys/stddev", "metadata/age"])
 
         self.open_preview_btn = wx.Button(self, -1, "Data View...", pos=(30, 265), size=(160, 24))
         self.gen_markdown_btn = wx.Button(self, -1, "MD Report Generator...", pos=(30, 295), size=(160, 24))
@@ -70,10 +72,21 @@ class MainWindow(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.show_corr_matrix, self.corr_mtx_btn)
 
         self.Bind(wx.EVT_CHECKLISTBOX, self.update_preview)
+        self.Bind(wxtree.EVT_TREE_ITEM_CHECKED, self.update_preview)
         self.Bind(wx.EVT_COMBOBOX, self.update_preview)
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
         self.txr_sessions = datareader.batch_import_txr_sessions("RESP_metadata.csv")
+
+    def create_path_checkbox_items(self, extractor_entry: regchk.CheckListEntry):
+        items = []
+        for index in reg.arr_patient_indices_registry:
+            if idxpath.index_applies_to_extractor(index.name, extractor_entry.name):
+                items.append(regchk.CheckListEntry(
+                    name=idxpath.create_combination_path(extractor_entry.name, index.name),
+                    display_name=index.display_name
+                ))
+        return items
 
     def update_preview(self, event):
         if self.preview_window is not None:
@@ -82,10 +95,7 @@ class MainWindow(wx.Frame):
             self.show_corr_matrix(None)
 
     def list_selected_index_paths(self):
-        return idxpath.create_combination_paths(
-            self.extractor_checkboxes.get_selections(),
-            self.index_checkboxes.get_selections()
-        )
+        return self.path_checkboxes.get_selections()
 
     def create_data_frame(self):
         return extractor.create_data_frame(
