@@ -15,7 +15,7 @@ class RegCheckListBox(wx.CheckListBox):
 
         super().__init__(parent=parent, choices=self.ctrl_choices, **kwargs)
 
-    def get_selections(self):
+    def get_selections(self) -> typing.List[str]:
         return [self.index_to_entry[idx] for idx in self.GetCheckedItems()]
 
     def set_selections(self, entry_names: typing.List[str]):

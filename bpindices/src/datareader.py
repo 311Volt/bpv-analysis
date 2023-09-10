@@ -6,7 +6,7 @@ from txrsession import TxrSession
 from txrsessionmetadata import TxrSessionMetadata
 
 
-def read_txr_sessions_metadata(filename: str) -> typing.List[TxrSessionMetadata]:
+def read_txr_sessions_metadata(filename: str, dir_rt: str = "RESP_TXR") -> typing.List[TxrSessionMetadata]:
     results = []
     with open(filename, "r") as infile:
         reader = csv.DictReader(infile)
@@ -21,7 +21,7 @@ def read_txr_sessions_metadata(filename: str) -> typing.List[TxrSessionMetadata]
                 age=int(row["Wiek"]),
                 gender="male" if row["Plec"][0] == 'M' else "female",
                 beginTime="{}-{}-{} {}".format(year, month, day, time),
-                originalFile=f"RESP_TXR/Raw_data_ABP_{row['Identyfikator']}.csv"
+                originalFile=f"{dir_rt}/Raw_data_ABP_{row['Identyfikator']}.csv"
             ))
     return results
 
@@ -71,5 +71,5 @@ def import_txr_session(metadata: TxrSessionMetadata) -> TxrSession:
     )
 
 
-def batch_import_txr_sessions(metadata_filename: str) -> typing.List[TxrSession]:
-    return [import_txr_session(meta) for meta in read_txr_sessions_metadata(metadata_filename)]
+def batch_import_txr_sessions(metadata_filename: str, dir_rt: str = "RESP_TXR") -> typing.List[TxrSession]:
+    return [import_txr_session(meta) for meta in read_txr_sessions_metadata(metadata_filename, dir_rt)]

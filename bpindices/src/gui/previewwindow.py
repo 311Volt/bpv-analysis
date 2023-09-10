@@ -2,10 +2,9 @@ import pandas
 import wx
 
 from src.gui.dataframe import DataFrameControl
-from src.gui.subwindow import SubWindow
 
 
-class PreviewWindow(SubWindow):
+class PreviewWindow(wx.Frame):
     def __init__(self, parent, df: pandas.DataFrame, **kwargs):
         super().__init__(parent, **kwargs)
         self.data_frame_list = DataFrameControl(self, df)
@@ -13,7 +12,6 @@ class PreviewWindow(SubWindow):
         self.vbox.Add(self.data_frame_list)
 
         self.SetTitle("Extracted Data Live Preview")
-        self.Show(True)
 
     def set_dataframe(self, df: pandas.DataFrame):
         self.data_frame_list.set_data_frame(df)

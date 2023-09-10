@@ -24,6 +24,7 @@ class TreeCheckListBox(wxtree.CustomTreeCtrl):
             child = self.AppendItem(group_parent, item.display_name, data=item.name, ct_type=1)
             self.child_items.append(child)
         self.Expand(self.root)
+        group_parent.Expand()
 
     def update_3_state(self, event: wxtree.TreeEvent):
         item: wxtree.GenericTreeItem = event.GetItem()

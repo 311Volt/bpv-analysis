@@ -1,3 +1,5 @@
+import dataclasses
+import typing
 import webbrowser
 
 import matplotlib.pyplot as plt
@@ -10,16 +12,24 @@ import src.dataflow.indexpath as idxpath
 import src.datareader as datareader
 import src.gui.regchecklistbox as regchk
 import src.gui.treechecklistbox as treechk
+import src.gui.analyzerlauncher as anl
 import src.registry as reg
+import src.bpvappcontext as appctx
 from src.gui.previewwindow import PreviewWindow
 
 FIGNUM_CORRELATION = 1
 
 
+@dataclasses.dataclass
+class MainWindowConfig:
+    selected_index_paths: typing.List[str]
+    selected_filter_names: typing.List[str]
+
+
 class MainWindow(wx.Frame):
 
-    def __init__(self, parent, title):
-        wx.Frame.__init__(self, parent, title=title, size=(640, 360))
+    def __init__(self, parent, ctx: appctx.BPVAppContext, title):
+        wx.Frame.__init__(self, parent, title=title, size=(640, 480))
         self.SetBackgroundColour(wx.NullColour)
         self.SetMinSize(self.GetSize())
 
@@ -39,9 +49,10 @@ class MainWindow(wx.Frame):
         self.group_box_1 = wx.StaticBox(self, label="Columns", pos=(25, 15), size=(330, 220))
         self.group_box_2 = wx.StaticBox(self, label="Filters", pos=(385, 15), size=(170, 220))
 
-        self.filter_checkboxes = regchk.RegCheckListBox(self, self.filter_choices, pos=(390, 30), size=(160, 200))
+        self.filter_checkboxes = regchk.RegCheckListBox(self, self.filter_choices, pos=(393, 33), size=(157, 197))
 
-        self.path_checkboxes = treechk.TreeCheckListBox(self, pos=(30, 30), size=(320, 200))
+        self.path_checkboxes = treechk.TreeCheckListBox(self, pos=(33, 33), size=(317, 197))
+
         for extractorentry in self.extractor_choices:
             self.path_checkboxes.add_item_group(extractorentry, self.create_path_checkbox_items(extractorentry))
 
@@ -50,34 +61,23 @@ class MainWindow(wx.Frame):
 
         self.open_preview_btn = wx.Button(self, -1, "Data View...", pos=(30, 265), size=(160, 24))
         self.gen_markdown_btn = wx.Button(self, -1, "MD Report Generator...", pos=(30, 295), size=(160, 24))
-        self.corr_mtx_btn = wx.Button(self, -1, "Correlation Matrix View...", pos=(205, 265), size=(160, 24))
-        self.stat_view_btn = wx.Button(self, -1, "Run Analyzer...", pos=(385, 265), size=(160, 24))
+        self.analyze_btn = wx.Button(self, -1, "Analyze...", pos=(385, 265), size=(160, 24))
 
-        self.corr_mode_sel_label = wx.StaticText(self, pos=(205, 300), size=(50, 24), style=wx.ALIGN_RIGHT)
-        self.corr_mode_sel_label.SetLabel("Mode: ")
-        self.corr_mode_sel = wx.ComboBox(
-            self,
-            name="Correlation Mode",
-            choices=["Pearson", "Spearman"], value="Pearson",
-            style=wx.CB_DROPDOWN | wx.CB_READONLY,
-            pos=(255, 295), size=(110, 24)
-        )
         self.gen_markdown_btn.Disable()
-
-        self.preview_window = None
 
         self.Bind(wx.EVT_BUTTON, self.show_preview, self.open_preview_btn)
         self.Bind(wx.EVT_BUTTON, self.generate_markdown, self.gen_markdown_btn)
-        self.Bind(wx.EVT_BUTTON, self.show_corr_matrix, self.corr_mtx_btn)
+        self.Bind(wx.EVT_BUTTON, self.show_analyzer_launcher, self.analyze_btn)
 
         self.Bind(wx.EVT_CHECKLISTBOX, self.update_preview)
         self.Bind(wxtree.EVT_TREE_ITEM_CHECKED, self.update_preview)
         self.Bind(wx.EVT_COMBOBOX, self.update_preview)
         self.Bind(wx.EVT_CLOSE, self.on_close)
 
-        self.txr_sessions = datareader.batch_import_txr_sessions("RESP_metadata.csv")
+        self.app_context = ctx
 
-    def create_path_checkbox_items(self, extractor_entry: regchk.CheckListEntry):
+    @staticmethod
+    def create_path_checkbox_items(extractor_entry: regchk.CheckListEntry):
         items = []
         for index in reg.arr_patient_indices_registry:
             if idxpath.index_applies_to_extractor(index.name, extractor_entry.name):
@@ -87,18 +87,28 @@ class MainWindow(wx.Frame):
                 ))
         return items
 
+    def get_config(self) -> MainWindowConfig:
+        return MainWindowConfig(
+            selected_index_paths=self.list_selected_index_paths(),
+            selected_filter_names=self.filter_checkboxes.get_selections()
+        )
+
     def update_preview(self, event):
-        if self.preview_window is not None:
-            self.preview_window.set_dataframe(self.create_data_frame())
-        if plt.fignum_exists(FIGNUM_CORRELATION):
-            self.show_corr_matrix(None)
+        self.app_context.slave_window_op(
+            "data_preview",
+            lambda preview_window: preview_window.set_dataframe(self.create_data_frame())
+        )
 
     def list_selected_index_paths(self):
         return self.path_checkboxes.get_selections()
 
+    def show_analyzer_launcher(self, event):
+        launcher = anl.AnalyzerLauncher(None, self.app_context, size=(480, 360))
+        self.app_context.spawn_slave_window("analyzer_launcher", launcher)
+
     def create_data_frame(self):
         return extractor.create_data_frame(
-            sessions=self.txr_sessions,
+            sessions=self.app_context.txr_sessions,
             filter_names=self.filter_checkboxes.get_selections(),
             index_paths=self.list_selected_index_paths()
         )
@@ -110,30 +120,13 @@ class MainWindow(wx.Frame):
             webbrowser.open("bpframe.html")
         pass
 
-    def get_correlation_mode(self):
-        return self.corr_mode_sel.GetStringSelection().lower()
-
     def show_preview(self, event):
         df = self.create_data_frame()
-        self.preview_window = PreviewWindow(None, df, on_close_callback=self.acknowledge_preview_close)
-
-    def acknowledge_preview_close(self):
-        self.preview_window = None
-
-    def show_corr_matrix(self, event):
-        corr_mtx = self.create_data_frame().corr(method=self.get_correlation_mode())
-        fig = plt.figure(FIGNUM_CORRELATION)
-        plt.clf()
-        ax = seaborn.heatmap(corr_mtx, annot=True, cmap='coolwarm', center=0, fmt=".2f", linewidths=0.5)
-        ax.figure.tight_layout()
-        ax.figure.subplots_adjust(left=0.2, bottom=0.1, top=0.9, right=0.9)
-        plt.title("Correlation Matrix of selected parameters (mode={})".format(self.get_correlation_mode()))
-        plt.show()
+        pwin = PreviewWindow(None, df)
+        self.app_context.spawn_slave_window("data_preview", pwin)
 
     def generate_markdown(self, event):
         pass
 
     def on_close(self, event):
-        if self.preview_window is not None:
-            self.preview_window.Close()
-        self.Destroy()
+        self.app_context.exit()
