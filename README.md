@@ -126,9 +126,10 @@ Create a file for an analyzer class in `src/analyzers`:
 # src/analyzers/customanalyzer.py
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
+from src.analyzers.abstractanalyzer import AbstractAnalyzer
 
 
-class CustomAnalyzer:
+class CustomAnalyzer(AbstractAnalyzer):
     def __init__(self, ctx: appctx.BPVAppContext, config: dict):
         self.app_context = ctx
         self.config = config
@@ -139,8 +140,6 @@ Define configuration for the analyzer inside the class:
 ```python
 
 @staticmethod
-
-
 def create_config_form(ctx: appctx.BPVAppContext):
     return [
         forminputs.Boolean(

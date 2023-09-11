@@ -2,6 +2,7 @@ import wx
 
 import src.gui.form as frm
 import src.registry as reg
+from src.analyzers import AbstractAnalyzer
 
 
 class AnalyzerLauncher(wx.Frame):
@@ -107,7 +108,7 @@ class AnalyzerLauncher(wx.Frame):
     def run_analyzer(self, event):
         analyzer_desc = self.get_current_analyzer_desc()
 
-        analyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
+        analyzer: AbstractAnalyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
 
         analyzer.process(self.ctx.create_active_dataframe())
         analyzer.present()

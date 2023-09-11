@@ -3,9 +3,10 @@ import pandas
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
+from src.analyzers.abstractanalyzer import AbstractAnalyzer
 
 
-class HistogramAnalyzer:
+class HistogramAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):

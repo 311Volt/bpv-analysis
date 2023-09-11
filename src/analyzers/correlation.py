@@ -4,11 +4,12 @@ import seaborn
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
+from src.analyzers.abstractanalyzer import AbstractAnalyzer
 
 FIGNUM_CORRELATION = 1
 
 
-class CorrelationAnalyzer:
+class CorrelationAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
