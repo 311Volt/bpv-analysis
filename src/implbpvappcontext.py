@@ -4,15 +4,16 @@ import wx
 
 from dataflow.dataextractor import create_data_frame
 import datareader
-import gui.mainwindow
 from bpvappcontext import BPVAppContext
+import src.gui.mainwindow as mainwindow
+
 
 class ImplBPVAppContext(BPVAppContext):
 
     def __init__(self, file_resp_metadata: str, dir_resp_txr: str):
         self.txr_sessions = datareader.batch_import_txr_sessions(file_resp_metadata, dir_resp_txr)
         self.wxapp = wx.App()
-        self.master_window = gui.mainwindow.MainWindow(None, self, "BPV Analyzer")
+        self.master_window = mainwindow.MainWindow(None, self, "BPV Analyzer")
         self.master_window.Show(True)
         self.slave_windows: typing.Dict[str, wx.Window] = dict()
 
