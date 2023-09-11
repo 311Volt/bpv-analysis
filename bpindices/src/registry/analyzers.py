@@ -1,8 +1,8 @@
 import typing
 from dataclasses import dataclass
-import src.registry.basicregistry as registry
 
 import src.analyzers as analyzers
+import src.registry.basicregistry as registry
 
 
 @dataclass

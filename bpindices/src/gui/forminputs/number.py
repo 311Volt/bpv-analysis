@@ -1,7 +1,6 @@
 import typing
 from dataclasses import dataclass
 
-import wx
 from wx.lib.masked.numctrl import NumCtrl
 
 

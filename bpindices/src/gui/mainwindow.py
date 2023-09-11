@@ -2,19 +2,16 @@ import dataclasses
 import typing
 import webbrowser
 
-import matplotlib.pyplot as plt
-import seaborn
 import wx
 import wx.lib.agw.customtreectrl as wxtree
 
+import src.bpvappcontext as appctx
 import src.dataflow.dataextractor as extractor
 import src.dataflow.indexpath as idxpath
-import src.datareader as datareader
+import src.gui.analyzerlauncher as anl
 import src.gui.regchecklistbox as regchk
 import src.gui.treechecklistbox as treechk
-import src.gui.analyzerlauncher as anl
 import src.registry as reg
-import src.bpvappcontext as appctx
 from src.gui.previewwindow import PreviewWindow
 
 FIGNUM_CORRELATION = 1
@@ -97,6 +94,10 @@ class MainWindow(wx.Frame):
         self.app_context.slave_window_op(
             "data_preview",
             lambda preview_window: preview_window.set_dataframe(self.create_data_frame())
+        )
+        self.app_context.slave_window_op(
+            "analyzer_launcher",
+            lambda analyzer_window: analyzer_window.update()
         )
 
     def list_selected_index_paths(self):

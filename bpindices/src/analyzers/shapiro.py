@@ -1,12 +1,9 @@
-import src.bpvappcontext as appctx
-import src.gui.forminputs as forminputs
-import src.dataflow.dataextractor as extractor
+import pandas
 import scipy.stats
-
 import wx
 
-import matplotlib.pyplot as plt
-import seaborn
+import src.bpvappcontext as appctx
+import src.gui.forminputs as forminputs
 
 
 class ShapiroAnalyzer:
@@ -26,14 +23,9 @@ class ShapiroAnalyzer:
         self.pvalue = 0
         pass
 
-    def process(self):
-
-        dataframe = extractor.create_data_frame(
-            self.app_context.txr_sessions,
-            self.app_context.get_selected_filters(),
-            [self.config["index_name"]]
-        )
-        self.pvalue = scipy.stats.shapiro(dataframe.to_numpy()).pvalue
+    def process(self, active_dataframe: pandas.DataFrame):
+        arr = active_dataframe[self.config["index_name"]]
+        self.pvalue = scipy.stats.shapiro(arr).pvalue
 
     def present(self):
         wx.MessageBox("p-value for {} is {}. This suggests that the data was drawn from a {} distribution.".format(

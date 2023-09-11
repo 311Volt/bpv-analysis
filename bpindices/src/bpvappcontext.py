@@ -1,45 +1,44 @@
-import typing
 
-import datareader
-import gui
-import wx
+from abc import ABCMeta, abstractmethod
 
 
-class BPVAppContext:
-
-    def __init__(self, file_resp_metadata: str, dir_resp_txr: str):
-        self.txr_sessions = datareader.batch_import_txr_sessions(file_resp_metadata, dir_resp_txr)
-        self.wxapp = wx.App()
-        self.master_window = gui.MainWindow(None, self, "BPV Analyzer")
-        self.master_window.Show(True)
-        self.slave_windows: typing.Dict[str, wx.Window] = dict()
-
+class BPVAppContext(metaclass=ABCMeta):
+    @abstractmethod
     def run_app(self):
-        self.wxapp.MainLoop()
+        pass
 
+    @abstractmethod
     def exit(self):
-        self.master_window.Destroy()
-        for win in self.slave_windows.values():
-            win.Destroy()
+        pass
 
+    @abstractmethod
     def get_selected_index_paths(self):
-        return self.master_window.list_selected_index_paths()
+        pass
 
+    @abstractmethod
     def get_selected_filters(self):
-        return self.master_window.filter_checkboxes.get_selections()
+        pass
 
+    @abstractmethod
+    def create_active_dataframe(self):
+        pass
+
+    @abstractmethod
+    def get_txr_sessions(self):
+        pass
+
+    @abstractmethod
+    def get_master_window(self):
+        pass
+
+    @abstractmethod
     def _on_slave_window_close(self, name):
-        self.slave_windows[name].Destroy()
-        self.slave_windows.pop(name)
+        pass
 
+    @abstractmethod
     def slave_window_op(self, name, op):
-        if name in self.slave_windows:
-            op(self.slave_windows[name])
+        pass
 
-    def spawn_slave_window(self, name: str, window: wx.Window):
-        if name in self.slave_windows:
-            self.slave_windows[name].Destroy()
-        self.slave_windows[name] = window
-        self.slave_windows[name].Bind(wx.EVT_CLOSE, lambda _: self._on_slave_window_close(name))
-        self.slave_windows[name].Show(True)
-
+    @abstractmethod
+    def spawn_slave_window(self, name, window):
+        pass

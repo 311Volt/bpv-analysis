@@ -1,11 +1,9 @@
+import matplotlib.pyplot as plt
 import pandas
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
-import src.dataflow.dataextractor as extractor
 
-import matplotlib.pyplot as plt
-import seaborn
 
 class HistogramAnalyzer:
 
@@ -27,11 +25,6 @@ class HistogramAnalyzer:
                 min_value=2,
                 max_value=500,
                 initial_value=2
-            ),
-            forminputs.OneOf(
-                key="use_filters",
-                choices=["selected", "allow_all"],
-                default_choice_str="selected"
             )
         ]
 
@@ -42,22 +35,16 @@ class HistogramAnalyzer:
         self.filters = []
         pass
 
-    def process(self):
-        self.filters = \
-            self.app_context.get_selected_filters() if self.config["use_filters"] == "selected" else []
-
-        self.dataframe = extractor.create_data_frame(
-            self.app_context.txr_sessions,
-            self.filters,
-            [self.config["index_name"]]
-        )
+    def process(self, active_dataframe: pandas.DataFrame):
+        self.dataframe = active_dataframe[self.config["index_name"]]
+        self.filters = self.app_context.get_selected_filters()
 
     def present(self):
         plt.figure(self.config["plt_fignum"])
         plt.clf()
 
-        filters_title = "" if self.config["use_filters"] == "allow_all" else \
-            "all that satisfy {}".format(self.filters)
+        filters_title = "" if len(self.filters) == 0 else \
+            "(all that satisfy {})".format(self.filters)
         plt.title("Histogram for {} {}".format(
             self.config["index_name"],
             filters_title

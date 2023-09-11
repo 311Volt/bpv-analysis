@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import wx
 
+
 @dataclass
 class Text:
     key: str
