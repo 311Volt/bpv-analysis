@@ -27,6 +27,11 @@ arr_analyzer_registry = [
         name="shapiro",
         display_name="Shapiro test",
         clazz=analyzers.ShapiroAnalyzer
+    ),
+    AnalyzerDescription(
+        name="grpcompare",
+        display_name="Compare Groups",
+        clazz=analyzers.GroupCompareAnalyzer
     )
 ]
 

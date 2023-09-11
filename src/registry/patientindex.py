@@ -39,7 +39,6 @@ arr_patient_indices_registry = [
         applicable_to="tag:num_series",
         calc_fn=idxfn.idx_residual_variability
     ),
-
     PatientIndex(
         name="entropy",
         display_name="Entropy (WIP)",
