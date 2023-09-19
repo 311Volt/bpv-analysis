@@ -44,20 +44,8 @@ class ShapiroAnalyzer(AbstractAnalyzer):
         ))
 
     def present_as_markdown(self, output: MarkdownOutput):
-        output.write_h2("Shapiro-Wilk test")
-
-        filters = [
-            reg.session_filter_registry[filter_name]
-            for filter_name in self.app_context.get_selected_filters()
-        ]
-        if len(filters) > 0:
-            output.writeln("For all patients that satisfy the following criteria: ")
-            output.write_bullet_points([flt.display_name for flt in filters])
-        else:
-            output.write("For all patients")
-
         output.write_paragraph(
-            f"the value of the index {self.config['index_name']} has been subjected to the "
+            f"The value of the index {self.config['index_name']} has been subjected to the "
             f"Shapiro-Wilk test, which yielded a p-value of **{self.pvalue}**. "
             f"{self.conclusion_str()}"
         )

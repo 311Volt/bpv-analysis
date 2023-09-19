@@ -108,6 +108,21 @@ class AnalyzerLauncher(wx.Frame):
     def update(self):
         self.update_impl(None)
 
+    def _md_report_prelude(self, analyzer_desc, mdoutput: MarkdownOutput):
+        mdoutput.write_h1("Test: " + analyzer_desc.display_name)
+        mdoutput.write_h3("Applied to indices: ")
+        mdoutput.write_bullet_points(self.ctx.get_selected_index_paths())
+        filters = [
+            reg.session_filter_registry[filter_name]
+            for filter_name in self.ctx.get_selected_filters()
+        ]
+
+        if len(filters) > 0:
+            mdoutput.write_h3("Patients must satisfy: ")
+            mdoutput.write_bullet_points([flt.display_name for flt in filters])
+
+        mdoutput.write_paragraph()
+
     def run_analyzer_md(self, event):
         analyzer_desc = self.get_current_analyzer_desc()
 
@@ -115,6 +130,7 @@ class AnalyzerLauncher(wx.Frame):
 
         with MarkdownOutput("markdown_report") as mdoutput:
             analyzer.process(self.ctx.create_active_dataframe())
+            self._md_report_prelude(analyzer_desc, mdoutput)
             analyzer.present_as_markdown(mdoutput)
 
     def run_analyzer(self, event):
@@ -124,6 +140,3 @@ class AnalyzerLauncher(wx.Frame):
 
         analyzer.process(self.ctx.create_active_dataframe())
         analyzer.present()
-
-
-

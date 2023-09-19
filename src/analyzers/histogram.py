@@ -41,7 +41,7 @@ class HistogramAnalyzer(AbstractAnalyzer):
         self.dataframe = active_dataframe[self.config["index_name"]]
         self.filters = self.app_context.get_selected_filters()
 
-    def present(self):
+    def plot(self):
         plt.figure(self.config["plt_fignum"])
         plt.clf()
 
@@ -55,7 +55,17 @@ class HistogramAnalyzer(AbstractAnalyzer):
             self.dataframe.to_numpy(),
             bins=self.config["num_of_bins"]
         )
+
+    def present(self):
+        self.plot()
         plt.show()
 
     def present_as_markdown(self, output: MarkdownOutput):
-        pass
+
+        output.write_paragraph(
+            f"The following {self.config['num_of_bins']}-bin histogram illustrates the distribution "
+            f"of {self.config['index_name']} for all patients subject to this test."
+        )
+
+        self.plot()
+        output.insert_current_pyplot_figure("hist_test")

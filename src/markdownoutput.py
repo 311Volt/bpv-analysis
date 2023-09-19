@@ -35,10 +35,10 @@ class MarkdownOutput:
     def write(self, text: str):
         self.file.write(text)
 
-    def writeln(self, text: str):
+    def writeln(self, text: str = ""):
         self.write(text + "\n")
 
-    def write_paragraph(self, text: str):
+    def write_paragraph(self, text: str = ""):
         self.write(text + "\n\n")
 
     def write_heading(self, text: str, order: int):

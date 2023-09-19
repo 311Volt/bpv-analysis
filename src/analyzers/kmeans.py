@@ -108,7 +108,6 @@ class KMeansAnalyzer(AbstractAnalyzer):
         self.app_context.slave_window_op("kmeans_present", lambda win: win.SetTitle("K-Means Cluster Stats"))
 
     def present_as_markdown(self, output: MarkdownOutput):
-        output.write_h2("K-Means analysis")
 
         output.write_paragraph(
             f"The data has been categorized into {self.kmeans.n_clusters} distinct classes. "
