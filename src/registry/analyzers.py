@@ -42,6 +42,11 @@ arr_analyzer_registry = [
         name="kmeans",
         display_name="K-Means",
         clazz=analyzers.KMeansAnalyzer
+    ),
+    AnalyzerDescription(
+        name="pca",
+        display_name="PCA",
+        clazz=analyzers.PCAAnalyzer
     )
 ]
 

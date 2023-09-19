@@ -5,3 +5,4 @@ from src.analyzers.shapiro import *
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
 from src.analyzers.groupcompare import GroupCompareAnalyzer
 from src.analyzers.agglomerativeclustering import AgglomerativeClusteringAnalyzer
+from src.analyzers.pca import PCAAnalyzer
