@@ -3,13 +3,15 @@ import scipy.stats
 import wx
 import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
+from src.analyzers.abstractanalyzer import AbstractAnalyzer
 from sklearn.decomposition import PCA
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
+from src.markdownoutput import MarkdownOutput
 
 
-class AgglomerativeClusteringAnalyzer:
+class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
@@ -51,3 +53,8 @@ class AgglomerativeClusteringAnalyzer:
         plt.title("COMPLETE (kolory odpowiadają wykrytym skupiskom)")
         plt.scatter(self.arr[:, 0], self.arr[:, 1], c=self.h.labels_)
         plt.show()
+
+    def present_as_markdown(self, output: MarkdownOutput):
+        pass
+
+

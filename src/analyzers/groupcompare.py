@@ -9,6 +9,7 @@ import src.gui.forminputs as forminputs
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
 import src.registry as reg
 import src.dataflow as dataflow
+from src.markdownoutput import MarkdownOutput
 
 
 class GroupCompareAnalyzer(AbstractAnalyzer):
@@ -84,3 +85,7 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
         b_logy = self.config["scale"] == "log"
         self.final_df.pivot("Index", "Group", "Value").plot(kind='bar', ax=plt.gca(), logy=b_logy)
         plt.show()
+
+    def present_as_markdown(self, output: MarkdownOutput):
+        pass
+

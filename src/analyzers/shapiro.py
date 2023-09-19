@@ -5,8 +5,11 @@ import wx
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
 
+from src.analyzers.abstractanalyzer import AbstractAnalyzer
+from src.markdownoutput import MarkdownOutput
 
-class ShapiroAnalyzer:
+
+class ShapiroAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
@@ -33,3 +36,6 @@ class ShapiroAnalyzer:
             self.pvalue,
             "normal" if self.pvalue < 0.05 else "non-normal"
         ))
+
+    def present_as_markdown(self, output: MarkdownOutput):
+        pass

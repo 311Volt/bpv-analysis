@@ -5,6 +5,7 @@ import seaborn
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
+from src.markdownoutput import MarkdownOutput
 
 FIGNUM_CORRELATION = 1
 
@@ -38,3 +39,8 @@ class CorrelationAnalyzer(AbstractAnalyzer):
         ax.figure.subplots_adjust(left=0.2, bottom=0.1, top=0.9, right=0.9)
         plt.title("Correlation Matrix of selected parameters (mode={})".format(self.config["mode"]))
         plt.show()
+
+    def present_as_markdown(self, output: MarkdownOutput):
+        pass
+
+

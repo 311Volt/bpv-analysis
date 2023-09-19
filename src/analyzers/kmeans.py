@@ -15,6 +15,7 @@ import src.registry as reg
 from src.analyzers import AbstractAnalyzer
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
+from src.markdownoutput import MarkdownOutput
 
 
 class KMeansAnalyzer(AbstractAnalyzer):
@@ -90,11 +91,14 @@ class KMeansAnalyzer(AbstractAnalyzer):
 
         # print(self.result)
 
-    def present(self):
+    def plot(self):
         plt.figure(105)
         plt.clf()
         plt.title("K-Means clustering (visualized with 2D PCA)")
         plt.scatter(self.arr2d[:, 0], self.arr2d[:, 1], c=self.kmeans.labels_)
+
+    def present(self):
+        self.plot()
         plt.show()
 
         self.app_context.spawn_slave_window(
@@ -103,7 +107,13 @@ class KMeansAnalyzer(AbstractAnalyzer):
         )
         self.app_context.slave_window_op("kmeans_present", lambda win: win.SetTitle("K-Means Cluster Stats"))
 
-    def present_as_markdown(self, output_filename: str):
-        pass
+    def present_as_markdown(self, output: MarkdownOutput):
+        output.write_h1("This is a test")
+        output.write_dataframe(self.result)
+
+        self.plot()
+        output.insert_current_pyplot_figure("kmeans-vis1", "K-Means Visualization")
+
+
 
 

@@ -4,6 +4,7 @@ import pandas
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
+from src.markdownoutput import MarkdownOutput
 
 
 class HistogramAnalyzer(AbstractAnalyzer):
@@ -55,3 +56,6 @@ class HistogramAnalyzer(AbstractAnalyzer):
             bins=self.config["num_of_bins"]
         )
         plt.show()
+
+    def present_as_markdown(self, output: MarkdownOutput):
+        pass

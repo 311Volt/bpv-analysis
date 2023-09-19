@@ -3,6 +3,7 @@ import wx
 import src.gui.form as frm
 import src.registry as reg
 from src.analyzers import AbstractAnalyzer
+from src.markdownoutput import MarkdownOutput
 
 
 class AnalyzerLauncher(wx.Frame):
@@ -30,7 +31,8 @@ class AnalyzerLauncher(wx.Frame):
             style=wx.CB_DROPDOWN | wx.CB_READONLY,
             pos=(70, 5)
         )
-        self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run...", pos=(220, 5))
+        self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run", pos=(220, 5))
+        self.add_to_report_btn = wx.Button(self.ctrlpanel, -1, "Add to report", pos=(300, 5))
 
         self.cur_indices_list_box = wx.ListBox(
             self.statuspanel, size=(200, 100),
@@ -47,9 +49,9 @@ class AnalyzerLauncher(wx.Frame):
         self.statussz2 = wx.StaticBoxSizer(wx.VERTICAL, self.statuspanel, "Using filters: ")
         self.statussz2.Add(self.cur_filters_list_box, border=5)
 
-        self.chk_rerun_on_upd = wx.CheckBox(self.ctrlpanel, label="Auto-update", pos=(330, 10))
-        self.chk_rerun_on_upd.SetValue(False)
-        self.chk_rerun_on_upd.Enable(False)
+        # self.chk_rerun_on_upd = wx.CheckBox(self.ctrlpanel, label="Auto-update", pos=(330, 10))
+        # self.chk_rerun_on_upd.SetValue(False)
+        # self.chk_rerun_on_upd.Enable(False)
 
         self.statussizer.Add(self.statussz1, border=5)
         self.statussizer.Add(self.statussz2, border=5)
@@ -68,6 +70,7 @@ class AnalyzerLauncher(wx.Frame):
         self.update()
         self.SetSizer(self.vsizer)
         self.Bind(wx.EVT_BUTTON, self.run_analyzer, self.run_analyzer_btn)
+        self.Bind(wx.EVT_BUTTON, self.run_analyzer_md, self.add_to_report_btn)
         self.Bind(wx.EVT_COMBOBOX, self.update_impl, self.analyzer_choice)
 
     def get_current_analyzer_desc(self):
@@ -99,11 +102,20 @@ class AnalyzerLauncher(wx.Frame):
         if len(indices) > 0:
             self.cur_indices_list_box.InsertItems(self.ctx.get_selected_index_paths(), pos=0)
 
-        if self.chk_rerun_on_upd.GetValue():
-            self.run_analyzer(None)
+        # if self.chk_rerun_on_upd.GetValue():
+        #     self.run_analyzer(None)
 
     def update(self):
         self.update_impl(None)
+
+    def run_analyzer_md(self, event):
+        analyzer_desc = self.get_current_analyzer_desc()
+
+        analyzer: AbstractAnalyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
+
+        with MarkdownOutput("markdown_report") as mdoutput:
+            analyzer.process(self.ctx.create_active_dataframe())
+            analyzer.present_as_markdown(mdoutput)
 
     def run_analyzer(self, event):
         analyzer_desc = self.get_current_analyzer_desc()
