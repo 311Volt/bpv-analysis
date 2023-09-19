@@ -18,7 +18,7 @@ class AnalyzerLauncher(wx.Frame):
 
         self.label_analyzer_choice = wx.StaticText(
             self.ctrlpanel, label="Analyzer: ",
-            pos=(10, 10)
+            pos=(10, 7)
         )
         self.analyzer_disp_names = [anal.display_name for anal in reg.arr_analyzer_registry]
         self.analyzer_names = [anal.name for anal in reg.arr_analyzer_registry]
@@ -30,7 +30,7 @@ class AnalyzerLauncher(wx.Frame):
             style=wx.CB_DROPDOWN | wx.CB_READONLY,
             pos=(70, 5)
         )
-        self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run...", pos=(170, 5))
+        self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run...", pos=(220, 5))
 
         self.cur_indices_list_box = wx.ListBox(
             self.statuspanel, size=(200, 100),
@@ -47,7 +47,7 @@ class AnalyzerLauncher(wx.Frame):
         self.statussz2 = wx.StaticBoxSizer(wx.VERTICAL, self.statuspanel, "Using filters: ")
         self.statussz2.Add(self.cur_filters_list_box, border=5)
 
-        self.chk_rerun_on_upd = wx.CheckBox(self.ctrlpanel, label="Re-run on update", pos=(270, 10))
+        self.chk_rerun_on_upd = wx.CheckBox(self.ctrlpanel, label="Auto-update", pos=(330, 10))
         self.chk_rerun_on_upd.SetValue(False)
         self.chk_rerun_on_upd.Enable(False)
 
