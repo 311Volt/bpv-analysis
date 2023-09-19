@@ -4,6 +4,7 @@ import wx
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
+import src.registry as reg
 
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
 from src.markdownoutput import MarkdownOutput
@@ -30,12 +31,33 @@ class ShapiroAnalyzer(AbstractAnalyzer):
         arr = active_dataframe[self.config["index_name"]]
         self.pvalue = scipy.stats.shapiro(arr).pvalue
 
+    def conclusion_str(self):
+        return "This suggests that the data was drawn from a {} distribution.".format(
+            "normal" if self.pvalue < 0.05 else "non-normal"
+        )
+
     def present(self):
-        wx.MessageBox("p-value for {} is {}. This suggests that the data was drawn from a {} distribution.".format(
+        wx.MessageBox("p-value for {} is {}. {}".format(
             self.config["index_name"],
             self.pvalue,
-            "normal" if self.pvalue < 0.05 else "non-normal"
+            self.conclusion_str()
         ))
 
     def present_as_markdown(self, output: MarkdownOutput):
-        pass
+        output.write_h2("Shapiro-Wilk test")
+
+        filters = [
+            reg.session_filter_registry[filter_name]
+            for filter_name in self.app_context.get_selected_filters()
+        ]
+        if len(filters) > 0:
+            output.writeln("For all patients that satisfy the following criteria: ")
+            output.write_bullet_points([flt.display_name for flt in filters])
+        else:
+            output.write("For all patients")
+
+        output.write_paragraph(
+            f"the value of the index {self.config['index_name']} has been subjected to the "
+            f"Shapiro-Wilk test, which yielded a p-value of **{self.pvalue}**. "
+            f"{self.conclusion_str()}"
+        )

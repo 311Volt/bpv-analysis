@@ -1,3 +1,5 @@
+import typing
+
 import pandas
 import os
 import matplotlib.pyplot as plt
@@ -53,6 +55,16 @@ class MarkdownOutput:
 
     def write_h4(self, text: str):
         self.write_heading(text, 4)
+
+    def write_bullet_points(self, items: typing.List[str]):
+        for item in items:
+            self.writeln(" - " + item)
+        self.write_paragraph("")
+
+    def write_ordered_list(self, items: typing.List[str]):
+        for idx, item in enumerate(items):
+            self.writeln("{}. ".format(idx) + item)
+        self.write_paragraph("")
 
     def _write_tbl_row(self, values, float_format: str = ".4g"):
         values_str = [

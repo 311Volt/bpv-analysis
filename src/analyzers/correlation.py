@@ -7,7 +7,6 @@ import src.gui.forminputs as forminputs
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-import umap
 from src.markdownoutput import MarkdownOutput
 
 FIGNUM_CORRELATION = 1
