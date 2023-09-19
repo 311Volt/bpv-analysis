@@ -25,7 +25,7 @@ class PCAAnalyzer(AbstractAnalyzer):
         pass
 
     def process(self, active_dataframe: pandas.DataFrame):
-        pca = PCA(n_components=4)
+        pca = PCA(n_components=max(4, len(self.columns)))
         pca.fit(active_dataframe)
         self.columns = active_dataframe.columns
         self.dataframe = pandas.DataFrame(pca.components_, columns=self.columns)
