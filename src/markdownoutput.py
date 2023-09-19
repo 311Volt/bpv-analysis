@@ -67,17 +67,32 @@ class MarkdownOutput:
         self.writeln("|-" * len(column_names) + "|")
 
     def write_dataframe(self, dataframe: pandas.DataFrame, max_of_col_emphasis=True, float_format=".4g"):
-        self._write_tbl_heading([" "] + dataframe.columns)
+        self._write_tbl_heading(["index"] + list(dataframe.columns))
         # TODO emphasis for max/min elements
         for row in dataframe.itertuples():
             self._write_tbl_row(row, float_format)
         self.writeln("")
 
+    @staticmethod
+    def _get_img_resource_rel_path(name):
+        return os.path.join(MarkdownOutput.RESOURCES_DIR_NAME, "{}.png".format(name))
+
+    def _get_img_resource_abs_path(self, name):
+        return os.path.join(self.output_directory, self._get_img_resource_rel_path(name))
+
     def insert_current_pyplot_figure(self, image_id: str, alt: str = None, **kwargs):
         if alt is None:
             alt = "Figure"
-        img_rel_path = os.path.join(MarkdownOutput.RESOURCES_DIR_NAME, "{}.png".format(image_id))
-        imgpath = os.path.join(self.output_directory, img_rel_path)
-        plt.savefig(fname=imgpath, **kwargs)
+        img_name = image_id
 
-        self.write_paragraph("![{}]({})".format(alt, img_rel_path))
+        counter = 0
+        while os.path.exists(self._get_img_resource_abs_path(img_name)):
+            img_name = "{}_{:03d}".format(image_id, counter)
+            counter += 1
+
+        imgpath_rel = self._get_img_resource_rel_path(img_name)
+        imgpath_abs = self._get_img_resource_abs_path(img_name)
+
+        plt.savefig(fname=imgpath_abs, **kwargs)
+
+        self.write_paragraph("![{}]({})".format(alt, imgpath_rel))
