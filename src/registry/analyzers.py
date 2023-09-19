@@ -32,6 +32,11 @@ arr_analyzer_registry = [
         name="grpcompare",
         display_name="Compare Groups",
         clazz=analyzers.GroupCompareAnalyzer
+    ),
+    AnalyzerDescription(
+        name="agglomerativec",
+        display_name="Hierarchical Grouping",
+        clazz=analyzers.AgglomerativeClusteringAnalyzer
     )
 ]
 
