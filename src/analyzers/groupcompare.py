@@ -14,7 +14,7 @@ from src.markdownoutput import MarkdownOutput
 
 class GroupCompareAnalyzer(AbstractAnalyzer):
     def __init__(self, ctx: appctx.BPVAppContext, config: dict):
-        self.ctx = ctx
+        self.app_context = ctx
         self.config = config
         self.final_df = None
 
@@ -57,14 +57,14 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
         group_names = [self.config["group_a_name"], self.config["group_b_name"]]
         group_dataframes: typing.List[pandas.DataFrame] = [
             dataflow.create_data_frame(
-                self.ctx.get_txr_sessions(),
+                self.app_context.get_txr_sessions(),
                 self.config["group_a_filters"],
-                self.ctx.get_selected_index_paths()
+                self.app_context.get_selected_index_paths()
             ),
             dataflow.create_data_frame(
-                self.ctx.get_txr_sessions(),
+                self.app_context.get_txr_sessions(),
                 self.config["group_b_filters"],
-                self.ctx.get_selected_index_paths()
+                self.app_context.get_selected_index_paths()
             )
         ]
 
@@ -80,12 +80,23 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
         self.final_df = pandas.DataFrame(dfdata, columns=["Index", "Group", "Value"])
 
     def present(self):
+        self.plot()
+        plt.show()
+
+    def plot(self):
         plt.figure(104)
         plt.clf()
         b_logy = self.config["scale"] == "log"
         self.final_df.pivot("Index", "Group", "Value").plot(kind='bar', ax=plt.gca(), logy=b_logy)
-        plt.show()
 
     def present_as_markdown(self, output: MarkdownOutput):
-        pass
+        parameters = ["group_a_filters: " + str(self.config["group_a_filters"]),
+                      "group_b_filters: " + str(self.config["group_b_filters"]),
+                      "collector_index: " + self.config["collector_index"],
+                      "scale: " + self.config["scale"]]
+        output.write_paragraph("Analysis using group comparison with following parameters was conducted:")
+        output.write_bullet_points(parameters)
+        output.write_paragraph("Results can be seen on the chart below:")
 
+        self.plot()
+        output.insert_current_pyplot_figure("group-vis2", "Group Comparison Visualization")

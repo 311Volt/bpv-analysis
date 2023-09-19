@@ -4,7 +4,10 @@ import wx
 import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
+from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+import umap
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
@@ -17,13 +20,14 @@ class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
     def create_config_form(ctx: appctx.BPVAppContext):
         return [
             forminputs.OneOf(
-                key="index_name",
-                choices=ctx.get_selected_index_paths(),
-            ),
-            forminputs.OneOf(
                 key="algorithm",
                 choices=["ward", "average", "complete", "single"],
                 default_choice_str="ward"
+            ),
+            forminputs.OneOf(
+                key="method_to_reduce_dimensions",
+                choices=["UMAP", "t-SNE", "PCA"],
+                default_choice_str="PCA"
             ),
             forminputs.Number(
                 key="num_of_classes",
@@ -43,18 +47,41 @@ class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
         pass
 
     def process(self, active_dataframe: pandas.DataFrame):
-        # arr = active_dataframe[self.config["index_name"]]
-        # self.pvalue = scipy.stats.shapiro(arr).pvalue
-        self.arr = PCA(n_components=2).fit_transform(active_dataframe)  # transform data frame to 2D
+        if self.config["method_to_reduce_dimensions"] == "UMAP":
+            reducer = umap.UMAP(n_components=2)
+            self.arr = reducer.fit_transform(active_dataframe)
+        elif self.config["method_to_reduce_dimensions"] == "t-SNE":
+            self.arr = TSNE(n_components=2, perplexity=30).fit_transform(active_dataframe)
+        else:
+            self.arr = PCA(n_components=2).fit_transform(active_dataframe)
         self.h = AgglomerativeClustering(linkage=self.config["algorithm"], n_clusters=self.config["num_of_classes"])
         self.h.fit(self.arr)
 
-    def present(self):
-        plt.title("COMPLETE (kolory odpowiadają wykrytym skupiskom)")
+    def plot_chart(self):
+        plt.title("Hierarchical Grouping")
         plt.scatter(self.arr[:, 0], self.arr[:, 1], c=self.h.labels_)
+
+    def plot_dendrogram(self):
+        dendrogram_plot = dendrogram(linkage(self.h.children_, method=self.h.linkage))
+        plt.title('Dendrogram')
+        plt.ylabel('Distance')
+
+    def present(self):
+        self.plot_chart()
+        plt.show()
+
+        self.plot_dendrogram()
         plt.show()
 
     def present_as_markdown(self, output: MarkdownOutput):
-        pass
+        parameters = ["linkage algorithm: " + self.config["algorithm"],
+                      "method to reduce dimensions: " + self.config["method_to_reduce_dimensions"],
+                      "number of classes: " + str(self.config["num_of_classes"])]
+        output.write_paragraph("Analysis using agglomerative clustering with following parameters was conducted:")
+        output.write_bullet_points(parameters)
+        output.write_paragraph("Results can be seen on the charts below:")
 
-
+        self.plot_chart()
+        output.insert_current_pyplot_figure("aggl-vis1", "Hierarchical Grouping Visualization")
+        self.plot_dendrogram()
+        output.insert_current_pyplot_figure("aggl-vis2", "Hierarchical Grouping Dendrogram Visualization")

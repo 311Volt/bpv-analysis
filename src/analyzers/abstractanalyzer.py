@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 import src.bpvappcontext as appctx
 from src.markdownoutput import MarkdownOutput
 
+
 class AbstractAnalyzer(metaclass=ABCMeta):
 
     @abstractmethod
