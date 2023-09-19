@@ -37,6 +37,11 @@ arr_analyzer_registry = [
         name="agglomerativec",
         display_name="Hierarchical Grouping",
         clazz=analyzers.AgglomerativeClusteringAnalyzer
+    ),
+    AnalyzerDescription(
+        name="kmeans",
+        display_name="K-Means",
+        clazz=analyzers.KMeansAnalyzer
     )
 ]
 

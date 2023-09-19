@@ -19,3 +19,7 @@ class AbstractAnalyzer(metaclass=ABCMeta):
     @abstractmethod
     def present(self):
         pass
+
+    @abstractmethod
+    def present_as_markdown(self, output_filename: str):
+        pass
