@@ -13,6 +13,7 @@ class MarkdownOutput:
         self.resource_directory = os.path.join(self.output_directory, MarkdownOutput.RESOURCES_DIR_NAME)
         self.filename = filename
         self.file_mode = file_mode
+        self.buffer = ""
 
         os.makedirs(self.output_directory, exist_ok=True)
         os.makedirs(self.resource_directory, exist_ok=True)
@@ -27,13 +28,17 @@ class MarkdownOutput:
         return self
 
     def __exit__(self, *args):
+        self.flush_buffer()
         self.file.close()
 
     def close(self):
         self.file.close()
 
+    def flush_buffer(self):
+        self.file.write(self.buffer)
+
     def write(self, text: str):
-        self.file.write(text)
+        self.buffer += text
 
     def writeln(self, text: str = ""):
         self.write(text + "\n")

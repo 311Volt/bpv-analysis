@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import pandas
 import seaborn
-from umap import UMAP
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
@@ -47,6 +46,7 @@ class CorrelationAnalyzer(AbstractAnalyzer):
         pass
 
     def process(self, active_dataframe: pandas.DataFrame):
+        from umap.umap_ import UMAP
         arr = active_dataframe
         if self.config["reduce_dimensions"]:
             if self.config["method_to_reduce_dimensions"] == "UMAP":
@@ -85,8 +85,8 @@ class CorrelationAnalyzer(AbstractAnalyzer):
     def present_as_markdown(self, output: MarkdownOutput):
         parameters = ["mode: " + self.config["mode"]]
         if self.config["reduce_dimensions"]:
-              parameters.append("method to reduce dimensions: " + self.config["method_to_reduce_dimensions"])
-              parameters.append("number of dimensions: " + str(self.config["number_of_dimensions"]))
+            parameters.append("method to reduce dimensions: " + self.config["method_to_reduce_dimensions"])
+            parameters.append("number of dimensions: " + str(self.config["number_of_dimensions"]))
         output.write_paragraph("Analysis using correlation with following parameters was conducted:")
         output.write_bullet_points(parameters)
         output.write_paragraph("Results can be seen on the chart below:")

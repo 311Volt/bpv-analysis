@@ -7,7 +7,6 @@ from src.analyzers.abstractanalyzer import AbstractAnalyzer
 from scipy.cluster.hierarchy import dendrogram, linkage
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-import umap
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
@@ -47,8 +46,9 @@ class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
         pass
 
     def process(self, active_dataframe: pandas.DataFrame):
+        from umap.umap_ import UMAP
         if self.config["method_to_reduce_dimensions"] == "UMAP":
-            reducer = umap.UMAP(n_components=2)
+            reducer = UMAP(n_components=2)
             self.arr = reducer.fit_transform(active_dataframe)
         elif self.config["method_to_reduce_dimensions"] == "t-SNE":
             self.arr = TSNE(n_components=2, perplexity=30).fit_transform(active_dataframe)

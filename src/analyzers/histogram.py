@@ -69,3 +69,4 @@ class HistogramAnalyzer(AbstractAnalyzer):
 
         self.plot()
         output.insert_current_pyplot_figure("hist_test")
+

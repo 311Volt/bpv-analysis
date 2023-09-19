@@ -1,13 +1,15 @@
 import wx
 
 import src.gui.form as frm
+import src.gui.htmlframe
 import src.registry as reg
 from src.analyzers import AbstractAnalyzer
 from src.markdownoutput import MarkdownOutput
+from src.bpvappcontext import BPVAppContext
 
 
 class AnalyzerLauncher(wx.Frame):
-    def __init__(self, parent, ctx, **kwargs):
+    def __init__(self, parent, ctx: BPVAppContext, **kwargs):
         super().__init__(parent, **kwargs)
 
         self.vsizer = wx.BoxSizer(wx.VERTICAL)
@@ -132,6 +134,10 @@ class AnalyzerLauncher(wx.Frame):
             analyzer.process(self.ctx.create_active_dataframe())
             self._md_report_prelude(analyzer_desc, mdoutput)
             analyzer.present_as_markdown(mdoutput)
+
+            # self.ctx.spawn_slave_window("md_preview", src.gui.htmlframe.HtmlFrame(None))
+            # self.ctx.slave_window_op("md_preview", lambda win: win.set_markdown(mdoutput.buffer))
+
 
     def run_analyzer(self, event):
         analyzer_desc = self.get_current_analyzer_desc()
