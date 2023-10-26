@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="20c75d27-989b-4d87-8809-a188382fa6d7" name="Changes" comment="" />
+    <list default="true" id="20c75d27-989b-4d87-8809-a188382fa6d7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/analyzers/umap.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/pb.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/pb.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/analyzers/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analyzers/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/analyzers/pca.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/analyzers/pca.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/registry/analyzers.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/registry/analyzers.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -28,14 +36,22 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "last_opened_file_path": "C:/edu/pb/src/analyzers/abstractanalyzer.py",
-    "settings.editor.selected.configurable": "terminal"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/Studia/Magisterskie/Magisterka/projekt_python/src/analyzers&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Studia\Magisterskie\Magisterka\projekt_python\src\analyzers" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\edu\pb" />
     </key>
@@ -48,12 +64,12 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\volt\AppData\Local\Programs\Python\Python38\python.exe" />
-      <option name="SDK_NAME" value="Python 3.8" />
+      <option name="SDK_HOME" value="" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="false" />
+      <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -74,5 +90,29 @@
       <updated>1684250649533</updated>
     </task>
     <servers />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/analyzers/pca.py</url>
+          <line>27</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/projekt_python$datareader.coverage" NAME="datareader Coverage Results" MODIFIED="1692965940557" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src" />
+    <SUITE FILE_PATH="coverage/projekt_python$basicregistry.coverage" NAME="basicregistry Coverage Results" MODIFIED="1692966059891" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src/registry" />
+    <SUITE FILE_PATH="coverage/projekt_python$indexfunctions.coverage" NAME="indexfunctions Coverage Results" MODIFIED="1692966031392" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src" />
+    <SUITE FILE_PATH="coverage/projekt_python$main.coverage" NAME="main Coverage Results" MODIFIED="1698246330127" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/projekt_python$sessionfilter.coverage" NAME="sessionfilter Coverage Results" MODIFIED="1692966082996" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src/registry" />
+    <SUITE FILE_PATH="coverage/projekt_python$txrsession.coverage" NAME="txrsession Coverage Results" MODIFIED="1692966049617" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src" />
+    <SUITE FILE_PATH="coverage/projekt_python$markdown_converter__1_.coverage" NAME="markdown_converter (1) Coverage Results" MODIFIED="1692966034596" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src" />
+    <SUITE FILE_PATH="coverage/projekt_python$markdown_converter.coverage" NAME="markdown_converter Coverage Results" MODIFIED="1689606855228" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices" />
+    <SUITE FILE_PATH="coverage/projekt_python$txrsessionmetadata.coverage" NAME="txrsessionmetadata Coverage Results" MODIFIED="1692966053706" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src" />
+    <SUITE FILE_PATH="coverage/projekt_python$mainwindow.coverage" NAME="mainwindow Coverage Results" MODIFIED="1692966688552" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src/gui" />
+    <SUITE FILE_PATH="coverage/projekt_python$dataextractor.coverage" NAME="dataextractor Coverage Results" MODIFIED="1692965867075" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/bpindices/src/dataflow" />
   </component>
 </project>

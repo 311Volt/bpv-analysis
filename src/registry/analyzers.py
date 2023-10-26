@@ -47,6 +47,11 @@ arr_analyzer_registry = [
         name="pca",
         display_name="PCA",
         clazz=analyzers.PCAAnalyzer
+    ),
+    AnalyzerDescription(
+        name="umap",
+        display_name="UMAP",
+        clazz=analyzers.UMAPAnalyzer
     )
 ]
 

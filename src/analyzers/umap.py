@@ -9,11 +9,29 @@ from src.markdownoutput import MarkdownOutput
 from sklearn.decomposition import PCA
 
 
-class PCAAnalyzer(AbstractAnalyzer):
+class UMAPAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
         return [
+            forminputs.OneOf(
+                key="metric",
+                choices=["euclidean", "manhattan", "chebyshev", "minkowski", "canberra", "braycurtis", "haversine",
+                         "mahalanobis", "wminkowski", "seuclidean", "cosine", "correlation"],
+                default_choice_str="euclidean"
+            ),
+            forminputs.Number(
+                key="neighbours",
+                min_value=2,
+                max_value=90,
+                initial_value=15
+            ),
+            forminputs.Number(
+                key="min_dist",
+                min_value=0.0,
+                max_value=1.0,
+                initial_value=0.1
+            )
         ]
 
     def __init__(self, ctx: appctx.BPVAppContext, config: dict):
@@ -25,10 +43,12 @@ class PCAAnalyzer(AbstractAnalyzer):
         pass
 
     def process(self, active_dataframe: pandas.DataFrame):
-        pca = PCA(n_components=min(4, len(active_dataframe.columns)))
-        pca.fit(active_dataframe)
+        from umap.umap_ import UMAP
+        umap = UMAP(n_components=min(4, len(active_dataframe.columns)), metric=self.config["metric"], n_neighbors=self.config["neighbours"], min_dist=self.config["min_dist"])
+        umap.fit(active_dataframe)
         self.columns = active_dataframe.columns
-        self.dataframe = pandas.DataFrame(pca.components_, columns=self.columns)
+        self.dataframe = pandas.DataFrame(umap.embedding_, columns=self.columns)
+        pass
 
     def plot(self):
         plt.figure(109)
