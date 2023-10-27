@@ -31,34 +31,47 @@ class UMAPAnalyzer(AbstractAnalyzer):
                 min_value=0.0,
                 max_value=1.0,
                 initial_value=0.1
+            ),
+            forminputs.Number(
+                key="n_components",
+                min_value=1,
+                max_value=3,
+                initial_value=2
             )
         ]
 
     def __init__(self, ctx: appctx.BPVAppContext, config: dict):
         self.app_context = ctx
         self.config = config
-        self.dataframe: pandas.DataFrame = pandas.DataFrame()
-        self.filters = []
         self.columns = []
+        self.arr = 0
+        self.n_components = self.config["n_components"]
+        self.df = 0
         pass
 
     def process(self, active_dataframe: pandas.DataFrame):
         from umap.umap_ import UMAP
-        umap = UMAP(n_components=min(4, len(active_dataframe.columns)), metric=self.config["metric"], n_neighbors=self.config["neighbours"], min_dist=self.config["min_dist"])
-        umap.fit(active_dataframe)
-        self.columns = active_dataframe.columns
-        self.dataframe = pandas.DataFrame(umap.embedding_, columns=self.columns)
+        self.n_components = min(self.n_components, len(active_dataframe.columns))
+        umap = UMAP(n_components=self.n_components, metric=self.config["metric"], n_neighbors=self.config["neighbours"], min_dist=self.config["min_dist"])
+        self.arr = umap.fit_transform(active_dataframe)
+        self.df = active_dataframe
         pass
 
     def plot(self):
-        plt.figure(109)
+        fig = plt.figure(109)
         plt.clf()
 
-        ax = seaborn.heatmap(self.dataframe, annot=True, cmap='coolwarm', center=0, fmt=".2f", linewidths=0.5)
-        ax.figure.tight_layout()
-        ax.figure.subplots_adjust(left=0.2, bottom=0.1, top=0.9, right=0.9)
+        if self.n_components == 1:
+            ax = fig.add_subplot(111)
+            ax.scatter(self.arr[:, 0], range(len(self.arr)))
+        if self.n_components == 2:
+            ax = fig.add_subplot(111)
+            ax.scatter(self.arr[:, 0], self.arr[:, 1])
+        if self.n_components == 3:
+            ax = fig.add_subplot(111, projection='3d')
+            ax.scatter(self.arr[:, 0], self.arr[:, 1], self.arr[:, 2], s=100)
 
-        plt.title('PCA components for all test subjects')
+        plt.title('UMAP components for all test subjects')
 
     def present(self):
         self.plot()
