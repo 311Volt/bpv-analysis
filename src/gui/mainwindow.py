@@ -104,7 +104,7 @@ class MainWindow(wx.Frame):
         return self.path_checkboxes.get_selections()
 
     def show_analyzer_launcher(self, event):
-        launcher = anl.AnalyzerLauncher(None, self.app_context, size=(480, 360))
+        launcher = anl.AnalyzerLauncher(None, self.app_context, size=(520, 360))
         self.app_context.spawn_slave_window("analyzer_launcher", launcher)
 
     def create_data_frame(self):

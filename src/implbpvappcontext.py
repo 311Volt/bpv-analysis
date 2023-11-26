@@ -16,6 +16,8 @@ class ImplBPVAppContext(BPVAppContext):
         self.master_window = mainwindow.MainWindow(None, self, "BPV Analyzer")
         self.master_window.Show(True)
         self.slave_windows: typing.Dict[str, wx.Window] = dict()
+        self.md_filename = "report"
+        self.clear_report = True
 
     def run_app(self):
         self.wxapp.MainLoop()
@@ -24,6 +26,19 @@ class ImplBPVAppContext(BPVAppContext):
         self.master_window.Destroy()
         for win in self.slave_windows.values():
             win.Destroy()
+
+    def get_report_filename(self):
+        return self.md_filename
+
+    def set_report_filename(self, filename):
+        self.md_filename = filename
+
+    def set_clear_report(self, value: bool):
+        self.clear_report = value
+
+    def get_clear_report(self):
+        return self.clear_report
+
 
     def get_selected_index_paths(self):
         return self.master_window.list_selected_index_paths()

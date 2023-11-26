@@ -6,6 +6,7 @@ import src.registry as reg
 from src.analyzers import AbstractAnalyzer
 from src.markdownoutput import MarkdownOutput
 from src.bpvappcontext import BPVAppContext
+import src.gui.filenameeditor as fne
 
 
 class AnalyzerLauncher(wx.Frame):
@@ -35,13 +36,14 @@ class AnalyzerLauncher(wx.Frame):
         )
         self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run", pos=(220, 5))
         self.add_to_report_btn = wx.Button(self.ctrlpanel, -1, "Add to report", pos=(300, 5))
+        self.new_report_btn = wx.Button(self.ctrlpanel, -1, "New report", pos=(400, 5))
 
         self.cur_indices_list_box = wx.ListBox(
-            self.statuspanel, size=(200, 100),
+            self.statuspanel, size=(220, 100),
             choices=ctx.get_selected_index_paths()
         )
         self.cur_filters_list_box = wx.ListBox(
-            self.statuspanel, size=(200, 100),
+            self.statuspanel, size=(220, 100),
             choices=ctx.get_selected_filters()
         )
 
@@ -73,6 +75,7 @@ class AnalyzerLauncher(wx.Frame):
         self.SetSizer(self.vsizer)
         self.Bind(wx.EVT_BUTTON, self.run_analyzer, self.run_analyzer_btn)
         self.Bind(wx.EVT_BUTTON, self.run_analyzer_md, self.add_to_report_btn)
+        self.Bind(wx.EVT_BUTTON, self.run_new_md, self.new_report_btn)
         self.Bind(wx.EVT_COMBOBOX, self.update_impl, self.analyzer_choice)
 
     def get_current_analyzer_desc(self):
@@ -125,12 +128,21 @@ class AnalyzerLauncher(wx.Frame):
 
         mdoutput.write_paragraph()
 
+    def run_new_md(self, event):
+        editor = fne.FilenameEditor(None, self.ctx, size=(270, 110))
+        self.ctx.spawn_slave_window("filename_editor", editor)
+
     def run_analyzer_md(self, event):
         analyzer_desc = self.get_current_analyzer_desc()
 
         analyzer: AbstractAnalyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
 
-        with MarkdownOutput("markdown_report") as mdoutput:
+        mode = "a"
+        if self.ctx.get_clear_report():
+            mode = "w"
+        self.ctx.set_clear_report(False)
+
+        with MarkdownOutput("markdown_report", self.ctx.get_report_filename() + ".md", mode) as mdoutput:
             analyzer.process(self.ctx.create_active_dataframe())
             self._md_report_prelude(analyzer_desc, mdoutput)
             analyzer.present_as_markdown(mdoutput)
