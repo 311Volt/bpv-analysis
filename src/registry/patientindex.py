@@ -88,6 +88,30 @@ arr_patient_indices_registry = [
         calc_fn=lambda meta: meta.age
     ),
     PatientIndex(
+        name="bmiValue",
+        display_name="BMI value",
+        applicable_to="session_data",
+        calc_fn=lambda meta: meta.bmiValue
+    ),
+    PatientIndex(
+        name="waistToHip",
+        display_name="Waist-to-hip ratio",
+        applicable_to="session_data",
+        calc_fn=lambda meta: meta.waistToHip
+    ),
+    PatientIndex(
+        name="drugsQuantity",
+        display_name="Drugs quantity",
+        applicable_to="session_data",
+        calc_fn=lambda meta: meta.drugsQuantity
+    ),
+    PatientIndex(
+        name="illnessDuration",
+        display_name="Hypertension duration",
+        applicable_to="session_data",
+        calc_fn=lambda meta: meta.illnessDuration
+    ),
+    PatientIndex(
         name="patient_id",
         display_name="Patient ID",
         applicable_to="session_data",
