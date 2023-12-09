@@ -1,3 +1,5 @@
+import configparser
+
 import wx
 
 import src.gui.form as frm
@@ -93,6 +95,9 @@ class AnalyzerLauncher(wx.Frame):
 
         form_spec = analyzer_desc.clazz.create_config_form(self.ctx)
         self.formpanel = frm.Form(self, form_spec)
+
+        save_config_btn = wx.Button(self.formpanel, -1, "Save Config", (380, 10))
+
         self.vsizer.Add(
             self.formpanel, proportion=1, flag=wx.EXPAND | wx.ALL, border=5
         )
@@ -106,6 +111,8 @@ class AnalyzerLauncher(wx.Frame):
             self.cur_filters_list_box.InsertItems(self.ctx.get_selected_filters(), pos=0)
         if len(indices) > 0:
             self.cur_indices_list_box.InsertItems(self.ctx.get_selected_index_paths(), pos=0)
+
+        self.Bind(wx.EVT_BUTTON, self.run_save_config, save_config_btn)
 
         # if self.chk_rerun_on_upd.GetValue():
         #     self.run_analyzer(None)
@@ -127,6 +134,18 @@ class AnalyzerLauncher(wx.Frame):
             mdoutput.write_bullet_points([flt.display_name for flt in filters])
 
         mdoutput.write_paragraph()
+
+    def run_save_config(self, event):
+        section_name = self.get_current_analyzer_desc().name
+        config_to_save = self.get_current_config_for_analyzer()
+
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        for cfg in config_to_save:
+            config.set(section_name, cfg, config_to_save[cfg])
+
+        with open('src/analyzers/analyzers.cfg', 'w') as configfile:
+            config.write(configfile)
 
     def run_new_md(self, event):
         editor = fne.FilenameEditor(None, self.ctx, size=(270, 110))

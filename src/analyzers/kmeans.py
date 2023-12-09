@@ -1,3 +1,5 @@
+import configparser
+
 import pandas
 import pandas as pd
 import scipy.stats
@@ -22,28 +24,32 @@ class KMeansAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        details_dict = dict(config.items('kmeans'))
+
         return [
             forminputs.Number(
                 key="num_classes",
                 min_value=2,
                 max_value=50,
-                initial_value=3
+                initial_value=int(details_dict["num_classes"])
             ),
             forminputs.OneOf(
                 key="init_method",
                 choices=["random", "k-means++"],
-                default_choice_str="k-means++"
+                default_choice_str=details_dict["init_method"]
             ),
             forminputs.Number(
                 key="max_iterations",
                 min_value=2,
                 max_value=2000,
-                initial_value=300
+                initial_value=int(details_dict["max_iterations"])
             ),
             forminputs.OneOf(
                 key="algorithm",
                 choices=["lloyd", "elkan"],
-                default_choice_str="lloyd"
+                default_choice_str=details_dict["algorithm"]
             )
         ]
 

@@ -1,3 +1,5 @@
+import configparser
+
 import matplotlib.pyplot as plt
 import pandas
 import seaborn
@@ -13,30 +15,34 @@ class UMAPAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        details_dict = dict(config.items('umap'))
+
         return [
             forminputs.OneOf(
                 key="metric",
                 choices=["euclidean", "manhattan", "chebyshev", "minkowski", "canberra", "braycurtis", "haversine",
                          "mahalanobis", "wminkowski", "seuclidean", "cosine", "correlation"],
-                default_choice_str="euclidean"
+                default_choice_str=details_dict["metric"]
             ),
             forminputs.Number(
                 key="neighbours",
                 min_value=2,
                 max_value=90,
-                initial_value=15
+                initial_value=int(details_dict["neighbours"])
             ),
-            forminputs.Number(
-                key="min_dist",
-                min_value=0.0,
-                max_value=1.0,
-                initial_value=0.1
+            forminputs.Number( # dopisac
+                key="min_dist * 10",
+                min_value=0,
+                max_value=10,
+                initial_value=int(details_dict["min_dist * 10"])
             ),
             forminputs.Number(
                 key="n_components",
                 min_value=1,
                 max_value=3,
-                initial_value=2
+                initial_value=int(details_dict["n_components"])
             )
         ]
 
@@ -52,7 +58,7 @@ class UMAPAnalyzer(AbstractAnalyzer):
     def process(self, active_dataframe: pandas.DataFrame):
         from umap.umap_ import UMAP
         self.n_components = min(self.n_components, len(active_dataframe.columns))
-        umap = UMAP(n_components=self.n_components, metric=self.config["metric"], n_neighbors=self.config["neighbours"], min_dist=self.config["min_dist"])
+        umap = UMAP(n_components=self.n_components, metric=self.config["metric"], n_neighbors=self.config["neighbours"], min_dist=self.config["min_dist * 10"])
         self.arr = umap.fit_transform(active_dataframe)
         self.df = active_dataframe
         pass

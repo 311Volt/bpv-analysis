@@ -1,3 +1,5 @@
+import configparser
+
 import matplotlib.pyplot as plt
 import pandas
 import seaborn
@@ -16,26 +18,30 @@ class CorrelationAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        details_dict = dict(config.items('correlation'))
+
         return [
             forminputs.OneOf(
                 key="mode",
                 choices=["pearson", "spearman"],
-                default_choice_str="pearson"
+                default_choice_str=details_dict["mode"]
             ),
             forminputs.Boolean(
                 key="reduce_dimensions",
-                initial_value=False
+                initial_value=bool(details_dict["reduce_dimensions"])
             ),
             forminputs.OneOf(
                 key="method_to_reduce_dimensions",
                 choices=["UMAP", "t-SNE", "PCA"],
-                default_choice_str="PCA"
+                default_choice_str=details_dict["method_to_reduce_dimensions"]
             ),
             forminputs.Number(
                 key="number_of_dimensions",
                 min_value=2,
                 max_value=len(ctx.get_selected_index_paths()),
-                initial_value=2
+                initial_value=int(details_dict["number_of_dimensions"])
             )
         ]
 

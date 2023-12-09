@@ -1,3 +1,5 @@
+import configparser
+
 import matplotlib.pyplot as plt
 import pandas
 
@@ -11,6 +13,10 @@ class HistogramAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        details_dict = dict(config.items('histogram'))
+
         return [
             forminputs.OneOf(
                 key="index_name",
@@ -20,13 +26,13 @@ class HistogramAnalyzer(AbstractAnalyzer):
                 key="num_of_bins",
                 min_value=2,
                 max_value=1000,
-                initial_value=20
+                initial_value=int(details_dict["num_of_bins"])
             ),
             forminputs.Number(
                 key="plt_fignum",
                 min_value=2,
                 max_value=500,
-                initial_value=2
+                initial_value=int(details_dict["plt_fignum"])
             )
         ]
 

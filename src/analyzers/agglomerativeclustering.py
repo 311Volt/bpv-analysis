@@ -1,6 +1,7 @@
 import pandas
 import scipy.stats
 import wx
+import configparser
 import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
@@ -11,28 +12,32 @@ from sklearn.manifold import TSNE
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
 from src.markdownoutput import MarkdownOutput
-
+import os
 
 class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        details_dict = dict(config.items('agglomerativec'))
+
         return [
             forminputs.OneOf(
                 key="algorithm",
                 choices=["ward", "average", "complete", "single"],
-                default_choice_str="ward"
+                default_choice_str=details_dict["algorithm"]
             ),
             forminputs.OneOf(
                 key="method_to_reduce_dimensions",
                 choices=["UMAP", "t-SNE", "PCA"],
-                default_choice_str="PCA"
+                default_choice_str=details_dict["method_to_reduce_dimensions"]
             ),
             forminputs.Number(
                 key="num_of_classes",
                 min_value=2,
                 max_value=10,
-                initial_value=3
+                initial_value=int(details_dict["num_of_classes"])
             )
         ]
 

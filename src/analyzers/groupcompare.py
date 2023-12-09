@@ -1,3 +1,4 @@
+import configparser
 import typing
 
 import matplotlib.pyplot as plt
@@ -20,6 +21,10 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        details_dict = dict(config.items('grpcompare'))
+
         applicable_indices = [
             idx.name for idx in reg.arr_patient_indices_registry
             if idx.applicable_to == "tag:num_series"
@@ -27,7 +32,7 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
         return [
             forminputs.Text(
                 key="group_a_name",
-                initial_value="Group A"
+                initial_value=details_dict["group_a_name"]
             ),
             forminputs.SubsetOf(
                 key="group_a_filters",
@@ -44,12 +49,12 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
             forminputs.OneOf(
                 key="collector_index",
                 choices=applicable_indices,
-                default_choice_str="mean"
+                default_choice_str=details_dict["collector_index"]
             ),
             forminputs.OneOf(
                 key="scale",
                 choices=["log", "linear"],
-                default_choice_str="linear"
+                default_choice_str=details_dict["scale"]
             )
         ]
 

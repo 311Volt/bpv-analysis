@@ -1,3 +1,5 @@
+import configparser
+
 import matplotlib.pyplot as plt
 import pandas
 import seaborn
@@ -13,12 +15,16 @@ class PCAAnalyzer(AbstractAnalyzer):
 
     @staticmethod
     def create_config_form(ctx: appctx.BPVAppContext):
+        config = configparser.RawConfigParser()
+        config.read('src/analyzers/analyzers.cfg')
+        details_dict = dict(config.items('pca'))
+
         return [
             forminputs.Number(
                 key="n_components",
                 min_value=1,
                 max_value=3,
-                initial_value=2
+                initial_value=int(details_dict["n_components"])
             )
         ]
 
