@@ -27,6 +27,21 @@ arr_session_filter_registry = [
         name="gender_female",
         display_name="Gender Female",
         predicate=lambda ses: ses.meta.gender == "female"
+    ),
+    SessionFilter(
+        name="age_group_0",
+        display_name="Ages 0-29",
+        predicate=lambda ses: ses.meta.age <= 29
+    ),
+    SessionFilter(
+        name="age_group_1",
+        display_name="Ages 29-54",
+        predicate=lambda ses: 29 <= ses.meta.age <= 54
+    ),
+    SessionFilter(
+        name="age_group_2",
+        display_name="Ages 55+",
+        predicate=lambda ses: ses.meta.age >= 55
     )
 ]
 

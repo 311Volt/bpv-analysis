@@ -1,22 +1,58 @@
+import hashlib
 import typing
 
 import pandas
+import numpy as np
 import os
 import matplotlib.pyplot as plt
 
+from PIL import Image
+
+from dataclasses import dataclass
+
+
+def render_current_figure() -> np.ndarray:
+    canvas = plt.gcf().canvas
+    canvas.draw()
+    return np.array(canvas.buffer_rgba())
+
+
+@dataclass
+class MarkdownImage:
+    content: np.ndarray
+    hash: str
+    alt: str
+
+    def src(self) -> str:
+        return "img/{}.png".format(self.hash)
+
+    def save(self, root):
+        os.makedirs(os.path.join(root, "img"), exist_ok=True)
+        path = os.path.join(root, self.src())
+        if not os.path.exists(path):
+            Image.fromarray(self.content).save(path)
+
+    def render(self) -> str:
+        return "\n[{}]({})\n".format(self.alt, self.src())
+
+
+@dataclass
+class MarkdownText:
+    text: str
+
+    def render(self) -> str:
+        return self.text
+
 
 class MarkdownOutput:
-    RESOURCES_DIR_NAME = "resources"
 
     def __init__(self, output_directory: str, filename: str = "report.md", file_mode: str = "a"):
         self.output_directory = output_directory
-        self.resource_directory = os.path.join(self.output_directory, MarkdownOutput.RESOURCES_DIR_NAME)
         self.filename = filename
         self.file_mode = file_mode
-        self.buffer = ""
+        self.buffer = []
 
         os.makedirs(self.output_directory, exist_ok=True)
-        os.makedirs(self.resource_directory, exist_ok=True)
         self._open_output_file()
         pass
 
@@ -28,17 +64,20 @@ class MarkdownOutput:
         return self
 
     def __exit__(self, *args):
-        self.flush_buffer()
+        self.write_to_filesystem()
         self.file.close()
 
     def close(self):
         self.file.close()
 
-    def flush_buffer(self):
-        self.file.write(self.buffer)
+    def write_to_filesystem(self):
+        for obj in self.buffer:
+            self.file.write(obj.render())
+            if isinstance(obj, MarkdownImage):
+                obj.save(self.output_directory)
 
     def write(self, text: str):
-        self.buffer += text
+        self.buffer.append(MarkdownText(text=text))
 
     def writeln(self, text: str = ""):
         self.write(text + "\n")
@@ -68,7 +107,7 @@ class MarkdownOutput:
 
     def write_ordered_list(self, items: typing.List[str]):
         for idx, item in enumerate(items):
-            self.writeln("{}. ".format(idx) + item)
+            self.writeln("{}. ".format(idx+1) + item)
         self.write_paragraph("")
 
     def _write_tbl_row(self, values, float_format: str = ".4g"):
@@ -90,26 +129,20 @@ class MarkdownOutput:
             self._write_tbl_row(row, float_format)
         self.writeln("")
 
-    @staticmethod
-    def _get_img_resource_rel_path(name):
-        return os.path.join(MarkdownOutput.RESOURCES_DIR_NAME, "{}.png".format(name))
-
     def _get_img_resource_abs_path(self, name):
         return os.path.join(self.output_directory, self._get_img_resource_rel_path(name))
 
     def insert_current_pyplot_figure(self, image_id: str, alt: str = None, **kwargs):
         if alt is None:
             alt = "Figure"
-        img_name = image_id
 
-        counter = 0
-        while os.path.exists(self._get_img_resource_abs_path(img_name)):
-            img_name = "{}_{:03d}".format(image_id, counter)
-            counter += 1
+        img = render_current_figure()
+        hash = hashlib.sha1(img).hexdigest()
 
-        imgpath_rel = self._get_img_resource_rel_path(img_name)
-        imgpath_abs = self._get_img_resource_abs_path(img_name)
+        obj = MarkdownImage(
+            content=img,
+            hash=hash,
+            alt=alt
+        )
 
-        plt.savefig(fname=imgpath_abs, **kwargs)
-
-        self.write_paragraph("![{}]({})".format(alt, imgpath_rel))
+        self.buffer.append(obj)
