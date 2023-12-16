@@ -11,7 +11,7 @@ from markdowndocument import MarkdownDocument, MarkdownImage
 
 
 class LivePreviewServer:
-    def __init__(self, name, ctx: BPVAppContext, host="0.0.0.0", port=7999):
+    def __init__(self, name, ctx: BPVAppContext, host="127.0.0.1", port=7999):
         self.app = flask.Flask(name)
         self.ctx = ctx
         self.needs_update = False
