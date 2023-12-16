@@ -1,4 +1,5 @@
 import configparser
+import pickle
 
 import wx
 
@@ -6,7 +7,7 @@ import src.gui.form as frm
 import src.gui.htmlframe
 import src.registry as reg
 from src.analyzers import AbstractAnalyzer
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 from src.bpvappcontext import BPVAppContext
 import src.gui.filenameeditor as fne
 
@@ -36,9 +37,11 @@ class AnalyzerLauncher(wx.Frame):
             style=wx.CB_DROPDOWN | wx.CB_READONLY,
             pos=(70, 5)
         )
-        self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run", pos=(220, 5))
-        self.add_to_report_btn = wx.Button(self.ctrlpanel, -1, "Add to report", pos=(300, 5))
-        self.new_report_btn = wx.Button(self.ctrlpanel, -1, "New report", pos=(400, 5))
+        # self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run", pos=(220, 5))
+        self.add_to_report_btn = wx.Button(self.ctrlpanel, -1, "Add to report", pos=(220, 5))
+        self.clear_report_btn = wx.Button(self.ctrlpanel, -1, "Clear report", pos=(320, 5))
+        self.load_report_btn = wx.Button(self.ctrlpanel, -1, "Load...", pos=(400, 5), size=(50, 30))
+        self.save_report_btn = wx.Button(self.ctrlpanel, -1, "Save...", pos=(450, 5), size=(50, 30))
 
         self.cur_indices_list_box = wx.ListBox(
             self.statuspanel, size=(220, 100),
@@ -75,10 +78,42 @@ class AnalyzerLauncher(wx.Frame):
 
         self.update()
         self.SetSizer(self.vsizer)
-        self.Bind(wx.EVT_BUTTON, self.run_analyzer, self.run_analyzer_btn)
+        # self.Bind(wx.EVT_BUTTON, self.run_analyzer, self.run_analyzer_btn)
+        self.Bind(wx.EVT_BUTTON, self.load_report, self.load_report_btn)
+        self.Bind(wx.EVT_BUTTON, self.save_report, self.save_report_btn)
         self.Bind(wx.EVT_BUTTON, self.run_analyzer_md, self.add_to_report_btn)
-        self.Bind(wx.EVT_BUTTON, self.run_new_md, self.new_report_btn)
+        self.Bind(wx.EVT_BUTTON, self.clear_md_report, self.clear_report_btn)
         self.Bind(wx.EVT_COMBOBOX, self.update_impl, self.analyzer_choice)
+
+    def save_report(self, event):
+        with wx.FileDialog(self, "Save report", wildcard="BPV Analyzer Reports (*.bpr)|*.bpr",
+                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+
+            pathname = fileDialog.GetPath()
+            try:
+                with open(pathname, 'wb') as file:
+                    pickle.dump(self.ctx.get_current_report(), file)
+            except IOError:
+                wx.LogError("Cannot save current data in file '%s'." % pathname)
+        pass
+
+    def load_report(self, event):
+        with wx.FileDialog(self, "Open report", wildcard="BPV Analyzer Reports (*.bpr)|*.bpr",
+                           style=wx.FD_OPEN | wx.FD_FILE_MUST_EXIST) as fileDialog:
+
+            if fileDialog.ShowModal() == wx.ID_CANCEL:
+                return
+
+            pathname = fileDialog.GetPath()
+            try:
+                with open(pathname, 'rb') as file:
+                    self.ctx.set_current_report(pickle.load(file))
+                    self.ctx.get_server().trigger_update()
+            except IOError:
+                wx.LogError("Cannot open file '%s'." % pathname)
 
     def get_current_analyzer_desc(self):
         return reg.arr_analyzer_registry[self.analyzer_choice.GetSelection()]
@@ -113,6 +148,7 @@ class AnalyzerLauncher(wx.Frame):
             self.cur_indices_list_box.InsertItems(self.ctx.get_selected_index_paths(), pos=0)
 
         self.Bind(wx.EVT_BUTTON, self.run_save_config, save_config_btn)
+        self.ctx.get_server().trigger_update()
 
         # if self.chk_rerun_on_upd.GetValue():
         #     self.run_analyzer(None)
@@ -120,7 +156,7 @@ class AnalyzerLauncher(wx.Frame):
     def update(self):
         self.update_impl(None)
 
-    def _md_report_prelude(self, analyzer_desc, mdoutput: MarkdownOutput):
+    def _md_report_prelude(self, analyzer_desc, mdoutput: MarkdownDocument):
         mdoutput.write_h1("Test: " + analyzer_desc.display_name)
         mdoutput.write_h3("Applied to indices: ")
         mdoutput.write_bullet_points(self.ctx.get_selected_index_paths())
@@ -147,27 +183,29 @@ class AnalyzerLauncher(wx.Frame):
         with open('src/analyzers/analyzers.cfg', 'w') as configfile:
             config.write(configfile)
 
-    def run_new_md(self, event):
-        editor = fne.FilenameEditor(None, self.ctx, size=(270, 110))
-        self.ctx.spawn_slave_window("filename_editor", editor)
+    def clear_md_report(self, event):
+        self.ctx.set_current_report(MarkdownDocument())
+        self.ctx.get_server().trigger_update()
 
     def run_analyzer_md(self, event):
         analyzer_desc = self.get_current_analyzer_desc()
 
         analyzer: AbstractAnalyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
 
-        mode = "a"
-        if self.ctx.get_clear_report():
-            mode = "w"
-        self.ctx.set_clear_report(False)
+        # mode = "a"
+        # if self.ctx.get_clear_report():
+        #     mode = "w"
+        # self.ctx.set_clear_report(False)
 
-        with MarkdownOutput("markdown_report", self.ctx.get_report_filename() + ".md", mode) as mdoutput:
-            analyzer.process(self.ctx.create_active_dataframe())
-            self._md_report_prelude(analyzer_desc, mdoutput)
-            analyzer.present_as_markdown(mdoutput)
+        mdoutput: MarkdownDocument = self.ctx.get_current_report()
+        analyzer.process(self.ctx.create_active_dataframe())
+        self._md_report_prelude(analyzer_desc, mdoutput)
+        analyzer.present_as_markdown(mdoutput)
 
-            # self.ctx.spawn_slave_window("md_preview", src.gui.htmlframe.HtmlFrame(None))
-            # self.ctx.slave_window_op("md_preview", lambda win: win.set_markdown(mdoutput.buffer))
+        self.ctx.get_server().trigger_update()
+
+        # self.ctx.spawn_slave_window("md_preview", src.gui.htmlframe.HtmlFrame(None))
+        # self.ctx.slave_window_op("md_preview", lambda win: win.set_markdown(mdoutput.buffer))
 
 
     def run_analyzer(self, event):

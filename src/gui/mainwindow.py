@@ -57,13 +57,12 @@ class MainWindow(wx.Frame):
         self.path_checkboxes.set_selections(["bp_sys/mean", "bp_sys/stddev", "metadata/age"])
 
         self.open_preview_btn = wx.Button(self, -1, "Data View...", pos=(30, 265), size=(160, 24))
-        self.gen_markdown_btn = wx.Button(self, -1, "MD Report Generator...", pos=(30, 295), size=(160, 24))
+        self.report_preview_btn = wx.Button(self, -1, "Open Report Preview...", pos=(30, 295), size=(160, 24))
         self.analyze_btn = wx.Button(self, -1, "Analyze...", pos=(385, 265), size=(160, 24))
 
-        self.gen_markdown_btn.Disable()
 
         self.Bind(wx.EVT_BUTTON, self.show_preview, self.open_preview_btn)
-        self.Bind(wx.EVT_BUTTON, self.generate_markdown, self.gen_markdown_btn)
+        self.Bind(wx.EVT_BUTTON, self.show_report_preview, self.report_preview_btn)
         self.Bind(wx.EVT_BUTTON, self.show_analyzer_launcher, self.analyze_btn)
 
         self.Bind(wx.EVT_CHECKLISTBOX, self.update_preview)
@@ -126,8 +125,9 @@ class MainWindow(wx.Frame):
         pwin = PreviewWindow(None, df)
         self.app_context.spawn_slave_window("data_preview", pwin)
 
-    def generate_markdown(self, event):
-        pass
+    def show_report_preview(self, event):
+        addr = self.app_context.get_server().get_addr()
+        webbrowser.open(addr)
 
     def on_close(self, event):
         self.app_context.exit()

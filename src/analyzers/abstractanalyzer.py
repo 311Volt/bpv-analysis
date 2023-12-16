@@ -1,6 +1,6 @@
 from abc import ABCMeta, abstractmethod
 import src.bpvappcontext as appctx
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 
 
 class AbstractAnalyzer(metaclass=ABCMeta):
@@ -23,5 +23,5 @@ class AbstractAnalyzer(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def present_as_markdown(self, output: MarkdownOutput):
+    def present_as_markdown(self, output: MarkdownDocument):
         pass

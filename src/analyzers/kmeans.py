@@ -17,7 +17,7 @@ import src.registry as reg
 from src.analyzers import AbstractAnalyzer
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 
 
 class KMeansAnalyzer(AbstractAnalyzer):
@@ -113,7 +113,7 @@ class KMeansAnalyzer(AbstractAnalyzer):
         )
         self.app_context.slave_window_op("kmeans_present", lambda win: win.SetTitle("K-Means Cluster Stats"))
 
-    def present_as_markdown(self, output: MarkdownOutput):
+    def present_as_markdown(self, output: MarkdownDocument):
 
         output.write_paragraph(
             f"The data has been categorized into {self.kmeans.n_clusters} distinct classes. "

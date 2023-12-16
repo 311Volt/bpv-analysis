@@ -11,20 +11,32 @@ class BPVAppContext(metaclass=ABCMeta):
     def exit(self):
         pass
 
+    # @abstractmethod
+    # def get_report_filename(self):
+    #     pass
+    #
+    # @abstractmethod
+    # def set_report_filename(self, filename : str):
+    #     pass
+    #
+    # @abstractmethod
+    # def set_clear_report(self, value : bool):
+    #     pass
+    #
+    # @abstractmethod
+    # def get_clear_report(self):
+    #     pass
+
     @abstractmethod
-    def get_report_filename(self):
+    def get_current_report(self):
         pass
 
     @abstractmethod
-    def set_report_filename(self, filename : str):
+    def set_current_report(self, report):
         pass
 
     @abstractmethod
-    def set_clear_report(self, value : bool):
-        pass
-
-    @abstractmethod
-    def get_clear_report(self):
+    def get_server(self):
         pass
 
     @abstractmethod

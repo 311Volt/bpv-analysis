@@ -6,7 +6,7 @@ import pandas
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 
 
 class HistogramAnalyzer(AbstractAnalyzer):
@@ -66,7 +66,7 @@ class HistogramAnalyzer(AbstractAnalyzer):
         self.plot()
         plt.show()
 
-    def present_as_markdown(self, output: MarkdownOutput):
+    def present_as_markdown(self, output: MarkdownDocument):
 
         output.write_paragraph(
             f"The following {self.config['num_of_bins']}-bin histogram illustrates the distribution "

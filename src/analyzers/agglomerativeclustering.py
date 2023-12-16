@@ -11,7 +11,7 @@ from sklearn.manifold import TSNE
 
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 import os
 
 class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
@@ -78,7 +78,7 @@ class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
         self.plot_dendrogram()
         plt.show()
 
-    def present_as_markdown(self, output: MarkdownOutput):
+    def present_as_markdown(self, output: MarkdownDocument):
         parameters = ["linkage algorithm: " + self.config["algorithm"],
                       "method to reduce dimensions: " + self.config["method_to_reduce_dimensions"],
                       "number of classes: " + str(self.config["num_of_classes"])]

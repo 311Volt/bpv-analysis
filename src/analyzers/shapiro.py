@@ -7,7 +7,7 @@ import src.gui.forminputs as forminputs
 import src.registry as reg
 
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 
 
 class ShapiroAnalyzer(AbstractAnalyzer):
@@ -43,7 +43,7 @@ class ShapiroAnalyzer(AbstractAnalyzer):
             self.conclusion_str()
         ))
 
-    def present_as_markdown(self, output: MarkdownOutput):
+    def present_as_markdown(self, output: MarkdownDocument):
         output.write_paragraph(
             f"The value of the index {self.config['index_name']} has been subjected to the "
             f"Shapiro-Wilk test, which yielded a p-value of **{self.pvalue}**. "

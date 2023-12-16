@@ -9,7 +9,7 @@ import src.gui.forminputs as forminputs
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 
 FIGNUM_CORRELATION = 1
 
@@ -88,7 +88,7 @@ class CorrelationAnalyzer(AbstractAnalyzer):
                + parameters + " The results of our analysis are presented on the " \
                               "charts below."
 
-    def present_as_markdown(self, output: MarkdownOutput):
+    def present_as_markdown(self, output: MarkdownDocument):
         parameters = ["mode: " + self.config["mode"]]
         if self.config["reduce_dimensions"]:
             parameters.append("method to reduce dimensions: " + self.config["method_to_reduce_dimensions"])

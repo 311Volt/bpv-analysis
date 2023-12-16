@@ -7,7 +7,7 @@ import seaborn
 import src.bpvappcontext as appctx
 import src.gui.forminputs as forminputs
 from src.analyzers.abstractanalyzer import AbstractAnalyzer
-from src.markdownoutput import MarkdownOutput
+from src.markdowndocument import MarkdownDocument
 from sklearn.decomposition import PCA
 
 
@@ -74,7 +74,7 @@ class PCAAnalyzer(AbstractAnalyzer):
         self.plot()
         plt.show()
 
-    def present_as_markdown(self, output: MarkdownOutput):
+    def present_as_markdown(self, output: MarkdownDocument):
 
         output.write_paragraph(
             f"The following chart illustrates the directions of maximum variance in the data"

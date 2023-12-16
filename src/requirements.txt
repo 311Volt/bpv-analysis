@@ -6,3 +6,5 @@ seaborn>=0.12.2
 scikit-learn>=1.2.2
 umap-learn>=0.5.4
 matplotlib>=3.8.2
+markdown>=3.5
+flask>=3.0.0
