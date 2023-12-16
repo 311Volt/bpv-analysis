@@ -11,6 +11,7 @@ class Form(scrolled.ScrolledPanel):
 
         self.sizer = wx.GridBagSizer(9, 4)
         self.forminputs = forminputs
+        self.onchange = lambda: None
 
         self.controls: typing.List[wx.Window] = []
 
@@ -33,8 +34,12 @@ class Form(scrolled.ScrolledPanel):
             )
             self.controls.append(ctrl)
 
+
         self.SetSizer(self.sizer)
         self.SetupScrolling()
+
+    def _on_change(self, event):
+        self.onchange()
 
     def collect(self):
         result_dict = dict()

@@ -1,0 +1,17 @@
+
+.current-analysis-preview {
+	margin: 5px;
+	padding: 5px;
+	border: 1px dotted red;
+	background-color: rgba(0.5, 0.5, 0.5, 0.25);
+}
+
+.current-analysis-preview::before {
+	content: "This is a preview. Click 'Add to report' to save this analysis!"
+}
+
+@media print {
+	.current-analysis-preview {
+		display: none;
+	}
+}

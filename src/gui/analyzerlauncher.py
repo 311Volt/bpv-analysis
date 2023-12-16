@@ -1,5 +1,6 @@
 import configparser
 import pickle
+import typing
 
 import wx
 
@@ -9,6 +10,7 @@ from src.analyzers import AbstractAnalyzer
 from src.markdowndocument import MarkdownDocument
 from src.bpvappcontext import BPVAppContext
 import src.gui.filenameeditor as fne
+import wx.lib.masked.numctrl
 import gzip
 
 
@@ -21,6 +23,8 @@ class AnalyzerLauncher(wx.Frame):
         self.ctrlpanel = wx.Panel(self, style=wx.BORDER_SUNKEN)
         self.statuspanel = wx.Panel(self, style=wx.BORDER_SUNKEN)
         self.formpanel = wx.Panel(self)
+        self.update_flag = True
+
         self.ctx = ctx
 
         self.label_analyzer_choice = wx.StaticText(
@@ -75,9 +79,32 @@ class AnalyzerLauncher(wx.Frame):
         self.SetSizer(self.vsizer)
         self.Bind(wx.EVT_BUTTON, self.load_report, self.load_report_btn)
         self.Bind(wx.EVT_BUTTON, self.save_report, self.save_report_btn)
-        self.Bind(wx.EVT_BUTTON, self.run_analyzer_md, self.add_to_report_btn)
+        self.Bind(wx.EVT_BUTTON, self.add_to_report, self.add_to_report_btn)
         self.Bind(wx.EVT_BUTTON, self.clear_md_report, self.clear_report_btn)
         self.Bind(wx.EVT_COMBOBOX, self.update_impl, self.analyzer_choice)
+
+        # TODO find some way to generically handle all command events coming from the form because this is horrible
+        # as of 2023-12-16 google and chatgpt are completely clueless
+        wxEVT_ANY_FORM_CONTROL = [
+            wx.wxEVT_CHECKBOX,
+            wx.lib.masked.numctrl.wxEVT_COMMAND_MASKED_NUMBER_UPDATED,
+            wx.wxEVT_COMBOBOX,
+            wx.wxEVT_CHECKLISTBOX,
+            wx.wxEVT_CHAR,
+            wx.wxEVT_BUTTON
+        ]
+
+        self.Bind(wx.PyEventBinder(wxEVT_ANY_FORM_CONTROL, 1), self.on_form_update)
+
+    def on_form_update(self, event: typing.Optional[wx.Event]):
+        # TODO run this asynchronously in the background
+        # might be problematic because matplotlib does not like running outside the main thread
+
+        if event is not None:
+            event.Skip()
+        if self.update_flag:
+            self.ctx.set_current_analysis_preview(self.run_analyzer())
+            self.ctx.get_server().trigger_update()
 
     def save_report(self, event):
         with wx.FileDialog(self, "Save report", wildcard="BPV Analyzer Reports (*.bpr)|*.bpr",
@@ -116,6 +143,7 @@ class AnalyzerLauncher(wx.Frame):
         return self.formpanel.collect()
 
     def update_impl(self, event):
+        self.update_flag = False
         analyzer_desc = self.get_current_analyzer_desc()
         analyzer_name = analyzer_desc.name
 
@@ -143,6 +171,8 @@ class AnalyzerLauncher(wx.Frame):
 
         self.Bind(wx.EVT_BUTTON, self.run_save_config, save_config_btn)
         self.ctx.get_server().trigger_update()
+        self.update_flag = True
+        self.on_form_update(None)
 
     def update(self):
         self.update_impl(None)
@@ -178,23 +208,18 @@ class AnalyzerLauncher(wx.Frame):
         self.ctx.set_current_report(MarkdownDocument())
         self.ctx.get_server().trigger_update()
 
-    def run_analyzer_md(self, event):
+    def run_analyzer(self, mdoutput=None) -> MarkdownDocument:
         analyzer_desc = self.get_current_analyzer_desc()
 
         analyzer: AbstractAnalyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
 
-        mdoutput: MarkdownDocument = self.ctx.get_current_report()
+        if mdoutput is None:
+            mdoutput = MarkdownDocument()
         analyzer.process(self.ctx.create_active_dataframe())
         self._md_report_prelude(analyzer_desc, mdoutput)
         analyzer.present_as_markdown(mdoutput)
+        return mdoutput
 
+    def add_to_report(self, event):
+        self.run_analyzer(self.ctx.get_current_report())
         self.ctx.get_server().trigger_update()
-
-
-    def run_analyzer(self, event):
-        analyzer_desc = self.get_current_analyzer_desc()
-
-        analyzer: AbstractAnalyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
-
-        analyzer.process(self.ctx.create_active_dataframe())
-        analyzer.present()

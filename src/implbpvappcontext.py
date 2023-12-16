@@ -19,6 +19,7 @@ class ImplBPVAppContext(BPVAppContext):
         self.master_window.Show(True)
         self.slave_windows: typing.Dict[str, wx.Window] = dict()
         self.current_report = MarkdownDocument()
+        self.current_preview = None
         self.preview_server = LivePreviewServer(__name__, self)
 
     def run_app(self):
@@ -30,18 +31,6 @@ class ImplBPVAppContext(BPVAppContext):
         for win in self.slave_windows.values():
             win.Destroy()
 
-    # def get_report_filename(self):
-    #     return self.md_filename
-    #
-    # def set_report_filename(self, filename):
-    #     self.md_filename = filename
-    #
-    # def set_clear_report(self, value: bool):
-    #     self.clear_report = value
-    #
-    # def get_clear_report(self):
-    #     return self.clear_report
-
     def get_server(self):
         return self.preview_server
 
@@ -50,6 +39,12 @@ class ImplBPVAppContext(BPVAppContext):
 
     def set_current_report(self, report):
         self.current_report = report
+
+    def get_current_analysis_preview(self):
+        return self.current_preview
+
+    def set_current_analysis_preview(self, doc):
+        self.current_preview = doc
 
     def get_selected_index_paths(self):
         return self.master_window.list_selected_index_paths()

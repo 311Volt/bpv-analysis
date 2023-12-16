@@ -20,6 +20,14 @@ class BPVAppContext(metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def get_current_analysis_preview(self):
+        pass
+
+    @abstractmethod
+    def set_current_analysis_preview(self, doc):
+        pass
+
+    @abstractmethod
     def get_server(self):
         pass
 

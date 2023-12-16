@@ -20,14 +20,23 @@ class LivePreviewServer:
 
         @self.app.route("/")
         def report_view():
-            md = markdown.markdown(self.ctx.get_current_report().render(), extensions=['tables'])
-            return flask.render_template("report.html", content=Markup(md))
+            md = self.ctx.get_current_report().render_to_html()
+            preview = ""
+            if self.ctx.get_current_analysis_preview() is not None:
+                preview = '<div class="current-analysis-preview">{}</div>'\
+                    .format(self.ctx.get_current_analysis_preview().render_to_html())
+            return flask.render_template("report.html", content=Markup(md), preview=Markup(preview))
 
         @self.app.route("/img/<imgpath>")
         def imgview(imgpath: str):
             imghash = imgpath.split(".")[0]
+            md_img = None
+            cur_prev = self.ctx.get_current_analysis_preview()
             if imghash in self._doc().block_dict:
                 md_img = self._doc().block_dict[imghash]
+            elif cur_prev is not None and imghash in cur_prev.block_dict:
+                md_img = cur_prev.block_dict[imghash]
+            if md_img is not None:
                 return flask.send_file(
                     io.BytesIO(md_img.get_png_data()),
                     download_name=imgpath,

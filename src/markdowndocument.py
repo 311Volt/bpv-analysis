@@ -6,6 +6,8 @@ import numpy as np
 import os
 import io
 import matplotlib.pyplot as plt
+import markdown
+import secrets
 
 from abc import ABCMeta, abstractmethod
 from PIL import Image
@@ -74,12 +76,15 @@ class MarkdownText(MarkdownNode):
     def hash(self) -> str:
         return hashlib.sha1(self.text.encode('utf-8')).hexdigest()
 
+# TODO MarkdownNodeRepository
 
 class MarkdownDocument(MarkdownNode):
 
     def __init__(self):
         self.block_dict: typing.Dict[str, MarkdownNode] = dict()
         self.block_hash_seq: typing.List[str] = []
+        self.classlist: typing.List[str] = []
+        self.id = secrets.token_hex(20)
         pass
 
     def _blocks(self):
@@ -91,11 +96,11 @@ class MarkdownDocument(MarkdownNode):
             result += blk.render()
         return result
 
+    def render_to_html(self):
+        return markdown.markdown(self.render(), extensions=['tables'])
+
     def hash(self) -> str:
-        h = hashlib.new('sha1')
-        for blk in self._blocks():
-            h.update(blk.hash())
-        return h.hexdigest()
+        return self.id
 
     def save_to_directory(self, output_dir):
         for blk_hash in self.block_hash_seq:
