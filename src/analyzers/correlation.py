@@ -52,10 +52,10 @@ class CorrelationAnalyzer(AbstractAnalyzer):
         pass
 
     def process(self, active_dataframe: pandas.DataFrame):
-        from umap.umap_ import UMAP
         arr = active_dataframe
         if self.config["reduce_dimensions"]:
             if self.config["method_to_reduce_dimensions"] == "UMAP":
+                from umap.umap_ import UMAP
                 reducer = UMAP(n_components=self.config["number_of_dimensions"])
                 arr = reducer.fit_transform(arr)
             elif self.config["method_to_reduce_dimensions"] == "t-SNE":
@@ -68,25 +68,11 @@ class CorrelationAnalyzer(AbstractAnalyzer):
         self.corr_mtx = arr.corr(method=self.config["mode"])
 
     def plot(self):
-        plt.figure(FIGNUM_CORRELATION)
-        plt.clf()
+        plt.figure()
         ax = seaborn.heatmap(self.corr_mtx, annot=True, cmap='coolwarm', center=0, fmt=".2f", linewidths=0.5)
         ax.figure.tight_layout()
         ax.figure.subplots_adjust(left=0.2, bottom=0.1, top=0.9, right=0.9)
         plt.title("Correlation Matrix of selected parameters (mode={})".format(self.config["mode"]))
-
-    def present(self):
-        self.plot()
-        plt.show()
-
-    def create_markdown(self):
-        if self.config["reduce_dimensions"]:
-            parameters = "method to reduce number of dimensions: " + self.config["method_to_reduce_dimensions"] \
-                         + ", number of classes: " + self.config["num_of_classes"] \
-                         + ", linkage algorithm: " + self.config["algorithm"]
-        return "We analysed data using agglomerative clustering. In the process following parameters were used:" \
-               + parameters + " The results of our analysis are presented on the " \
-                              "charts below."
 
     def present_as_markdown(self, output: MarkdownDocument):
         parameters = ["mode: " + self.config["mode"]]
@@ -98,6 +84,6 @@ class CorrelationAnalyzer(AbstractAnalyzer):
         output.write_paragraph("Results can be seen on the chart below:")
 
         self.plot()
-        output.insert_current_pyplot_figure("corr-vis2", "Correlation Visualization")
+        output.insert_current_pyplot_figure()
 
 

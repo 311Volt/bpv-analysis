@@ -62,10 +62,6 @@ class HistogramAnalyzer(AbstractAnalyzer):
             bins=self.config["num_of_bins"]
         )
 
-    def present(self):
-        self.plot()
-        plt.show()
-
     def present_as_markdown(self, output: MarkdownDocument):
 
         output.write_paragraph(
@@ -74,5 +70,5 @@ class HistogramAnalyzer(AbstractAnalyzer):
         )
 
         self.plot()
-        output.insert_current_pyplot_figure("hist_test")
+        output.insert_current_pyplot_figure()
 

@@ -8,13 +8,11 @@ import io
 import matplotlib.pyplot as plt
 
 from abc import ABCMeta, abstractmethod
-
 from PIL import Image
-
 from dataclasses import dataclass
 
 
-class MarkdownBlock(metaclass=ABCMeta):
+class MarkdownNode(metaclass=ABCMeta):
     @abstractmethod
     def render(self) -> str:
         pass
@@ -27,7 +25,7 @@ class MarkdownBlock(metaclass=ABCMeta):
         pass
 
 
-class MarkdownImage(MarkdownBlock):
+class MarkdownImage(MarkdownNode):
     content: np.ndarray
     pngdata: bytes
     imghash: str
@@ -68,7 +66,7 @@ class MarkdownImage(MarkdownBlock):
 
 
 @dataclass
-class MarkdownText(MarkdownBlock):
+class MarkdownText(MarkdownNode):
     text: str
 
     def render(self) -> str:
@@ -78,29 +76,37 @@ class MarkdownText(MarkdownBlock):
         return hashlib.sha1(self.text.encode('utf-8')).hexdigest()
 
 
-class MarkdownDocument:
+class MarkdownDocument(MarkdownNode):
 
     def __init__(self):
-        self.block_dict: typing.Dict[str, MarkdownBlock] = dict()
+        self.block_dict: typing.Dict[str, MarkdownNode] = dict()
         self.block_hash_seq: typing.List[str] = []
         pass
 
-    def render_document(self):
+    def _blocks(self):
+        return [self.block_dict[blk_hash] for blk_hash in self.block_hash_seq]
+
+    def render(self):
         result = ""
-        for blk_hash in self.block_hash_seq:
-            result += self.block_dict[blk_hash].render()
+        for blk in self._blocks():
+            result += blk.render()
         return result
+
+    def hash(self) -> str:
+        h = hashlib.new('sha1')
+        for blk in self._blocks():
+            h.update(blk.hash())
+        return h.hexdigest()
 
     def save_to_directory(self, output_dir):
         for blk_hash in self.block_hash_seq:
             self.block_dict[blk_hash].save(output_dir)
         with open(os.path.join(output_dir, "report.md")) as out_md_file:
-            out_md_file.write(self.render_document())
+            out_md_file.write(self.render())
 
-    def add_block(self, block: MarkdownBlock):
+    def add_block(self, block: MarkdownNode):
         blk_hash = block.hash()
-        if blk_hash not in self.block_dict:
-            self.block_dict[blk_hash] = block
+        self.block_dict[blk_hash] = block
         self.block_hash_seq.append(blk_hash)
 
     def write(self, text: str):
@@ -156,5 +162,8 @@ class MarkdownDocument:
             self._write_tbl_row(row, float_format)
         self.writeln("")
 
-    def insert_current_pyplot_figure(self, image_id: str, alt: str = None, **kwargs):
+    def write_subdocument(self, document: MarkdownNode):
+        self.add_block(document)
+
+    def insert_current_pyplot_figure(self):
         self.add_block(MarkdownImage.of_current_pyplot_figure())

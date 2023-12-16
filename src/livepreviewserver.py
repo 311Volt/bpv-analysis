@@ -20,7 +20,7 @@ class LivePreviewServer:
 
         @self.app.route("/")
         def report_view():
-            md = markdown.markdown(self.ctx.get_current_report().render_document(), extensions=['tables'])
+            md = markdown.markdown(self.ctx.get_current_report().render(), extensions=['tables'])
             return flask.render_template("report.html", content=Markup(md))
 
         @self.app.route("/img/<imgpath>")
@@ -28,12 +28,11 @@ class LivePreviewServer:
             imghash = imgpath.split(".")[0]
             if imghash in self._doc().block_dict:
                 md_img = self._doc().block_dict[imghash]
-                if isinstance(md_img, MarkdownImage):
-                    return flask.send_file(
-                        io.BytesIO(md_img.get_png_data()),
-                        download_name=imgpath,
-                        mimetype='image/png'
-                    )
+                return flask.send_file(
+                    io.BytesIO(md_img.get_png_data()),
+                    download_name=imgpath,
+                    mimetype='image/png'
+                )
             return flask.Response(status=404)
 
         @self.app.route("/needs-update")

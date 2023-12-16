@@ -84,10 +84,6 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
 
         self.final_df = pandas.DataFrame(dfdata, columns=["Index", "Group", "Value"])
 
-    def present(self):
-        self.plot()
-        plt.show()
-
     def plot(self):
         plt.figure(104)
         plt.clf()
@@ -104,4 +100,4 @@ class GroupCompareAnalyzer(AbstractAnalyzer):
         output.write_paragraph("Results can be seen on the chart below:")
 
         self.plot()
-        output.insert_current_pyplot_figure("group-vis2", "Group Comparison Visualization")
+        output.insert_current_pyplot_figure()

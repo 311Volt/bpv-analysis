@@ -71,13 +71,6 @@ class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
         plt.title('Dendrogram')
         plt.ylabel('Distance')
 
-    def present(self):
-        self.plot_chart()
-        plt.show()
-
-        self.plot_dendrogram()
-        plt.show()
-
     def present_as_markdown(self, output: MarkdownDocument):
         parameters = ["linkage algorithm: " + self.config["algorithm"],
                       "method to reduce dimensions: " + self.config["method_to_reduce_dimensions"],
@@ -87,6 +80,6 @@ class AgglomerativeClusteringAnalyzer(AbstractAnalyzer):
         output.write_paragraph("Results can be seen on the charts below:")
 
         self.plot_chart()
-        output.insert_current_pyplot_figure("aggl-vis1", "Hierarchical Grouping Visualization")
+        output.insert_current_pyplot_figure()
         self.plot_dendrogram()
-        output.insert_current_pyplot_figure("aggl-vis2", "Hierarchical Grouping Dendrogram Visualization")
+        output.insert_current_pyplot_figure()

@@ -113,13 +113,6 @@ class MainWindow(wx.Frame):
             index_paths=self.list_selected_index_paths()
         )
 
-    def show_preview_html(self, event):
-        df = self.create_data_frame()
-        with open("bpframe.html", "w") as htmlfile:
-            htmlfile.write(df.to_html())
-            webbrowser.open("bpframe.html")
-        pass
-
     def show_preview(self, event):
         df = self.create_data_frame()
         pwin = PreviewWindow(None, df)
@@ -127,7 +120,7 @@ class MainWindow(wx.Frame):
 
     def show_report_preview(self, event):
         addr = self.app_context.get_server().get_addr()
-        webbrowser.open(addr)
+        webbrowser.open(addr, new=1)
 
     def on_close(self, event):
         self.app_context.exit()

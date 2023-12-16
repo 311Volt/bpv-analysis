@@ -71,13 +71,6 @@ class PCAAnalyzer(AbstractAnalyzer):
 
         plt.title('PCA components for all test subjects')
 
-    def present(self):
-        self.plotTable()
-        plt.show()
-
-        self.plotChart()
-        plt.show()
-
     def present_as_markdown(self, output: MarkdownDocument):
 
         output.write_paragraph(
@@ -86,6 +79,6 @@ class PCAAnalyzer(AbstractAnalyzer):
         )
 
         self.plotTable()
-        output.insert_current_pyplot_figure("pca1")
+        output.insert_current_pyplot_figure()
         self.plotChart()
-        output.insert_current_pyplot_figure("pca2")
+        output.insert_current_pyplot_figure()

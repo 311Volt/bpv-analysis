@@ -10,6 +10,7 @@ from src.analyzers import AbstractAnalyzer
 from src.markdowndocument import MarkdownDocument
 from src.bpvappcontext import BPVAppContext
 import src.gui.filenameeditor as fne
+import gzip
 
 
 class AnalyzerLauncher(wx.Frame):
@@ -20,7 +21,7 @@ class AnalyzerLauncher(wx.Frame):
 
         self.ctrlpanel = wx.Panel(self, style=wx.BORDER_SUNKEN)
         self.statuspanel = wx.Panel(self, style=wx.BORDER_SUNKEN)
-        self.formpanel: frm.Form = wx.Panel(self)
+        self.formpanel = wx.Panel(self)
         self.ctx = ctx
 
         self.label_analyzer_choice = wx.StaticText(
@@ -94,7 +95,7 @@ class AnalyzerLauncher(wx.Frame):
 
             pathname = fileDialog.GetPath()
             try:
-                with open(pathname, 'wb') as file:
+                with gzip.open(pathname, 'wb') as file:
                     pickle.dump(self.ctx.get_current_report(), file)
             except IOError:
                 wx.LogError("Cannot save current data in file '%s'." % pathname)
@@ -109,7 +110,7 @@ class AnalyzerLauncher(wx.Frame):
 
             pathname = fileDialog.GetPath()
             try:
-                with open(pathname, 'rb') as file:
+                with gzip.open(pathname, 'rb') as file:
                     self.ctx.set_current_report(pickle.load(file))
                     self.ctx.get_server().trigger_update()
             except IOError:

@@ -19,9 +19,5 @@ class AbstractAnalyzer(metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def present(self):
-        pass
-
-    @abstractmethod
     def present_as_markdown(self, output: MarkdownDocument):
         pass

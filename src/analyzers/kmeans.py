@@ -103,16 +103,6 @@ class KMeansAnalyzer(AbstractAnalyzer):
         plt.title("K-Means clustering (visualized with 2D PCA)")
         plt.scatter(self.arr2d[:, 0], self.arr2d[:, 1], c=self.kmeans.labels_)
 
-    def present(self):
-        self.plot()
-        plt.show()
-
-        self.app_context.spawn_slave_window(
-            "kmeans_present",
-            PreviewWindow(None, self.result)
-        )
-        self.app_context.slave_window_op("kmeans_present", lambda win: win.SetTitle("K-Means Cluster Stats"))
-
     def present_as_markdown(self, output: MarkdownDocument):
 
         output.write_paragraph(
@@ -125,7 +115,7 @@ class KMeansAnalyzer(AbstractAnalyzer):
             f"After flattening the data to 2D using PCA, the label distribution may be visualized as follows:"
         )
         self.plot()
-        output.insert_current_pyplot_figure("kmeans-vis1", "K-Means Visualization")
+        output.insert_current_pyplot_figure()
 
 
 

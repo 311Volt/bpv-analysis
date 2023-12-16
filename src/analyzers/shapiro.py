@@ -36,13 +36,6 @@ class ShapiroAnalyzer(AbstractAnalyzer):
             "normal" if self.pvalue < 0.05 else "non-normal"
         )
 
-    def present(self):
-        wx.MessageBox("p-value for {} is {}. {}".format(
-            self.config["index_name"],
-            self.pvalue,
-            self.conclusion_str()
-        ))
-
     def present_as_markdown(self, output: MarkdownDocument):
         output.write_paragraph(
             f"The value of the index {self.config['index_name']} has been subjected to the "

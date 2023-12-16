@@ -79,10 +79,6 @@ class UMAPAnalyzer(AbstractAnalyzer):
 
         plt.title('UMAP components for all test subjects')
 
-    def present(self):
-        self.plot()
-        plt.show()
-
     def present_as_markdown(self, output: MarkdownDocument):
 
         output.write_paragraph(
@@ -91,4 +87,4 @@ class UMAPAnalyzer(AbstractAnalyzer):
         )
 
         self.plot()
-        output.insert_current_pyplot_figure("pca")
+        output.insert_current_pyplot_figure()
