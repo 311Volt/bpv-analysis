@@ -11,22 +11,6 @@ class BPVAppContext(metaclass=ABCMeta):
     def exit(self):
         pass
 
-    # @abstractmethod
-    # def get_report_filename(self):
-    #     pass
-    #
-    # @abstractmethod
-    # def set_report_filename(self, filename : str):
-    #     pass
-    #
-    # @abstractmethod
-    # def set_clear_report(self, value : bool):
-    #     pass
-    #
-    # @abstractmethod
-    # def get_clear_report(self):
-    #     pass
-
     @abstractmethod
     def get_current_report(self):
         pass

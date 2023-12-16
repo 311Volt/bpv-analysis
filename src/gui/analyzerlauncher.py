@@ -4,7 +4,6 @@ import pickle
 import wx
 
 import src.gui.form as frm
-import src.gui.htmlframe
 import src.registry as reg
 from src.analyzers import AbstractAnalyzer
 from src.markdowndocument import MarkdownDocument
@@ -38,7 +37,6 @@ class AnalyzerLauncher(wx.Frame):
             style=wx.CB_DROPDOWN | wx.CB_READONLY,
             pos=(70, 5)
         )
-        # self.run_analyzer_btn = wx.Button(self.ctrlpanel, -1, "Run", pos=(220, 5))
         self.add_to_report_btn = wx.Button(self.ctrlpanel, -1, "Add to report", pos=(220, 5))
         self.clear_report_btn = wx.Button(self.ctrlpanel, -1, "Clear report", pos=(320, 5))
         self.load_report_btn = wx.Button(self.ctrlpanel, -1, "Load...", pos=(400, 5), size=(50, 30))
@@ -59,10 +57,6 @@ class AnalyzerLauncher(wx.Frame):
         self.statussz2 = wx.StaticBoxSizer(wx.VERTICAL, self.statuspanel, "Using filters: ")
         self.statussz2.Add(self.cur_filters_list_box, border=5)
 
-        # self.chk_rerun_on_upd = wx.CheckBox(self.ctrlpanel, label="Auto-update", pos=(330, 10))
-        # self.chk_rerun_on_upd.SetValue(False)
-        # self.chk_rerun_on_upd.Enable(False)
-
         self.statussizer.Add(self.statussz1, border=5)
         self.statussizer.Add(self.statussz2, border=5)
         self.statuspanel.SetSizer(self.statussizer)
@@ -79,7 +73,6 @@ class AnalyzerLauncher(wx.Frame):
 
         self.update()
         self.SetSizer(self.vsizer)
-        # self.Bind(wx.EVT_BUTTON, self.run_analyzer, self.run_analyzer_btn)
         self.Bind(wx.EVT_BUTTON, self.load_report, self.load_report_btn)
         self.Bind(wx.EVT_BUTTON, self.save_report, self.save_report_btn)
         self.Bind(wx.EVT_BUTTON, self.run_analyzer_md, self.add_to_report_btn)
@@ -88,7 +81,7 @@ class AnalyzerLauncher(wx.Frame):
 
     def save_report(self, event):
         with wx.FileDialog(self, "Save report", wildcard="BPV Analyzer Reports (*.bpr)|*.bpr",
-                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT) as fileDialog:
+                           style=wx.FD_SAVE | wx.FD_OVERWRITE_PROMPT, defaultFile="report.bpr") as fileDialog:
 
             if fileDialog.ShowModal() == wx.ID_CANCEL:
                 return
@@ -151,9 +144,6 @@ class AnalyzerLauncher(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.run_save_config, save_config_btn)
         self.ctx.get_server().trigger_update()
 
-        # if self.chk_rerun_on_upd.GetValue():
-        #     self.run_analyzer(None)
-
     def update(self):
         self.update_impl(None)
 
@@ -193,20 +183,12 @@ class AnalyzerLauncher(wx.Frame):
 
         analyzer: AbstractAnalyzer = analyzer_desc.clazz(self.ctx, self.get_current_config_for_analyzer())
 
-        # mode = "a"
-        # if self.ctx.get_clear_report():
-        #     mode = "w"
-        # self.ctx.set_clear_report(False)
-
         mdoutput: MarkdownDocument = self.ctx.get_current_report()
         analyzer.process(self.ctx.create_active_dataframe())
         self._md_report_prelude(analyzer_desc, mdoutput)
         analyzer.present_as_markdown(mdoutput)
 
         self.ctx.get_server().trigger_update()
-
-        # self.ctx.spawn_slave_window("md_preview", src.gui.htmlframe.HtmlFrame(None))
-        # self.ctx.slave_window_op("md_preview", lambda win: win.set_markdown(mdoutput.buffer))
 
 
     def run_analyzer(self, event):

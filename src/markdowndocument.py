@@ -26,18 +26,16 @@ class MarkdownNode(metaclass=ABCMeta):
 
 
 class MarkdownImage(MarkdownNode):
-    content: np.ndarray
     pngdata: bytes
     imghash: str
     alt: str
 
     def __init__(self, content: np.ndarray, alt: str):
-        self.content = content
         self.alt = alt
-        self.imghash = hashlib.sha1(content).hexdigest()
         with io.BytesIO() as bio:
-            Image.fromarray(self.content).save(bio, format='png')
+            Image.fromarray(content).save(bio, format='png')
             self.pngdata = bio.getvalue()
+        self.imghash = hashlib.sha1(self.pngdata).hexdigest()
 
     @staticmethod
     def of_current_pyplot_figure():
@@ -59,7 +57,8 @@ class MarkdownImage(MarkdownNode):
         path = os.path.join(root_dir, self.src())
 
         if not os.path.exists(path):
-            Image.fromarray(self.content).save(path)
+            with open(path, "wb") as outfile:
+                outfile.write(self.pngdata)
 
     def render(self) -> str:
         return "\n![{}]({})\n".format(self.alt, self.src())
