@@ -45,7 +45,7 @@ class PCAAnalyzer(AbstractAnalyzer):
         self.columns = active_dataframe.columns
         self.dataframe = pandas.DataFrame(pca.components_, columns=self.columns)
 
-    def plot(self):
+    def plotTable(self):
         plt.figure(109)
         plt.clf()
 
@@ -55,6 +55,7 @@ class PCAAnalyzer(AbstractAnalyzer):
 
         plt.title('PCA components for all test subjects')
 
+    def plotChart(self):
         fig = plt.figure(110)
         plt.clf()
 
@@ -71,7 +72,10 @@ class PCAAnalyzer(AbstractAnalyzer):
         plt.title('PCA components for all test subjects')
 
     def present(self):
-        self.plot()
+        self.plotTable()
+        plt.show()
+
+        self.plotChart()
         plt.show()
 
     def present_as_markdown(self, output: MarkdownDocument):
@@ -81,5 +85,7 @@ class PCAAnalyzer(AbstractAnalyzer):
             f" for all patients subjected to this test."
         )
 
-        self.plot()
-        output.insert_current_pyplot_figure("pca")
+        self.plotTable()
+        output.insert_current_pyplot_figure("pca1")
+        self.plotChart()
+        output.insert_current_pyplot_figure("pca2")
